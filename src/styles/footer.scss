@@ -1,0 +1,21 @@
+// src/styles/footer.scss
+
+@use 'variables' as *;
+
+footer {
+  background-color: $black;
+  text-align: center;
+  padding: 1.5rem 0;
+  font-size: 0.875rem;
+
+  a {
+    color: $blue;
+    text-decoration: none;
+    margin: 0 0.5rem;
+    transition: color 0.3s;
+
+    &:hover {
+      color: #33b1ff;
+    }
+  }
+}

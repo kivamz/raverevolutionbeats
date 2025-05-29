@@ -1,0 +1,39 @@
+// src/styles/hero.scss
+@use 'variables' as *;
+
+.hero {
+  flex: 1; /* Se expandirá para ocupar el espacio disponible */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  /* Ajusta el padding para que el hero no tenga too much space en la parte superior */
+  padding: 2rem 0;
+  background-color: $black;
+}
+
+.hero h1 {
+  font-size: 3rem;
+  margin-bottom: 1rem;
+  color: $white;
+}
+
+.hero p {
+  font-size: 1.25rem;
+  color: $gray-light;
+  margin-bottom: 2rem;
+}
+
+.hero .btn {
+  display: inline-block;
+  background-color: $blue;
+  color: $white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.hero .btn:hover {
+  background-color: #0090c4;
+}
