@@ -1,13 +1,13 @@
 // src/styles/hero.scss
 @use 'variables' as *;
+@use "sass:color"; // Necesario para usar color.scale()
 
 .hero {
-  flex: 1; /* Se expandirá para ocupar el espacio disponible */
+  flex: 1; /* Se expande para ocupar el espacio disponible en desktop */
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
-  /* Ajusta el padding para que el hero no tenga too much space en la parte superior */
   padding: 2rem 0;
   background-color: $black;
 }
@@ -35,5 +35,51 @@
 }
 
 .hero .btn:hover {
-  background-color: #0090c4;
+  background-color: $accent;
+}
+
+/* Sección extra dentro del Hero */
+.hero-extra {
+  margin-top: 2rem;
+}
+
+.hero-extra h2 {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+  color: $blue;
+}
+
+.hero-extra p {
+  font-size: 1.125rem;
+  margin-bottom: 1rem;
+}
+
+.hero-extra .btn.secondary {
+  background-color: $purple;
+  color: $white;
+  padding: 0.8rem 1.5rem;
+  border-radius: 9999px;
+  text-decoration: none;
+  transition: background-color 0.3s;
+}
+
+.hero-extra .btn.secondary:hover {
+  background-color: color.scale($purple, $lightness: 10%);
+}
+
+/* Ajustes para dispositivos móviles */
+@media (max-width: 768px) {
+  .hero {
+    flex: none;      /* Elimina el forzado de expansión */
+    padding: 1rem 0; /* Reduce el padding vertical */
+  }
+  
+  .hero h1 {
+    font-size: 2.5rem;
+  }
+  
+  .hero p {
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
+  }
 }

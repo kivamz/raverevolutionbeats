@@ -1,21 +1,120 @@
 // src/styles/footer.scss
-
 @use 'variables' as *;
 
-footer {
-  background-color: $black;
-  text-align: center;
-  padding: 1.5rem 0;
-  font-size: 0.875rem;
+.footer {
+  background-color: $footer-bg;
+  color: $footer-text;
+  padding: 3rem 0;
+  font-size: 0.9rem;
+  box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.5);
 
-  a {
-    color: $blue;
-    text-decoration: none;
-    margin: 0 0.5rem;
-    transition: color 0.3s;
+  .footer-container {
+    /* Se espera que el HTML combine la clase "container" global y "footer-container" local */
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
 
-    &:hover {
-      color: #33b1ff;
+  .footer-top {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(209, 209, 214, 0.2);
+
+    /* Puedes eliminar este h2 si ya tienes el logo en otras partes */
+    h2 {
+      font-size: 1.8rem;
+      margin: 0;
+      color: $footer-text;
+      font-weight: 600;
+      letter-spacing: 1.5px;
+    }
+    
+    .footer-nav {
+      ul {
+        list-style: none;
+        display: flex;
+        gap: 1.5rem;
+        padding: 0;
+        margin: 0;
+        
+        li {
+          a {
+            color: $footer-text;
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s;
+            &:hover {
+              color: $accent;
+            }
+          }
+        }
+      }
+    }
+    
+    .footer-social {
+      display: flex;
+      gap: 1rem;
+      
+      a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border: 1px solid $footer-text;
+        border-radius: 50%;
+        color: $footer-text;
+        text-decoration: none;
+        font-size: 1.5rem; /* Tamaño base del ícono */
+        transition: all 0.3s;
+        
+        &:hover {
+          color: $accent;
+          border-color: $accent;
+        }
+      }
+    }
+  }
+
+  .footer-bottom {
+    text-align: center;
+    padding-top: 1rem;
+    border-top: 1px solid rgba(209, 209, 214, 0.2);
+    
+    p {
+      margin: 0.5rem 0;
+      a {
+        color: $footer-text;
+        text-decoration: none;
+        transition: color 0.3s;
+        &:hover {
+          color: $accent;
+        }
+      }
+    }
+  }
+}
+
+@media (max-width: 768px) {
+  .footer {
+    .footer-top {
+      flex-direction: column;
+      text-align: center;
+
+      .footer-nav ul {
+        flex-direction: column;
+        gap: 0.75rem;
+      }
+      
+      .footer-social {
+        flex-direction: row;
+        justify-content: center;
+        gap: 0.75rem;
+      }
     }
   }
 }

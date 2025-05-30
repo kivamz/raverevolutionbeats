@@ -1,10 +1,48 @@
 ---
-import '../styles/global.scss';
+// src/components/Footer.astro
 import '../styles/footer.scss';
 ---
-<footer>
-  <div class="container">
-    <p>&copy; 2025 Rave Revolution Beats</p>
-    <!-- Puedes agregar links de redes sociales aquí -->
+<footer class="footer">
+  <div class="container footer-container">
+    <div class="footer-top">
+      <!-- Puedes decidir quitar el título si ya cuentas con el logo en el header -->
+      <h2>Rave Revolution Beats</h2>
+      <nav class="footer-nav">
+        <ul>
+          <li><a href="/">Home</a></li>
+          <li><a href="/about">About</a></li>
+          <li><a href="/music">Music</a></li>
+          <li><a href="/store">Store</a></li>
+          <li><a href="/contact">Contact</a></li>
+        </ul>
+      </nav>
+      <div class="footer-social">
+        <a href="https://www.youtube.com/@RaveRevolutionBeats" target="_blank" rel="noopener">
+          <i class="fa-brands fa-youtube"></i>
+        </a>
+        <a href="https://www.instagram.com/raverevolutionbeats" target="_blank" rel="noopener">
+          <i class="fa-brands fa-instagram"></i>
+        </a>
+        <a href="https://www.tiktok.com/@raverevolutionbeats" target="_blank" rel="noopener">
+          <i class="fa-brands fa-tiktok"></i>
+        </a>
+        <a href="https://linktr.ee/raverevolutionbeats" target="_blank" rel="noopener">
+          <i class="fa-solid fa-link"></i>
+        </a>
+        <a href="https://www.threads.com/@raverevolutionbeats" target="_blank" rel="noopener">
+          <!-- No existe un icono oficial para Threads en Font Awesome, así que usamos uno alternativo -->
+          <i class="fa-brands fa-threads"></i>
+        </a>
+        <a href="https://x.com/RaveRevolutionB" target="_blank" rel="noopener">
+          <i class="fa-brands fa-x-twitter"></i>
+        </a>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2025 Rave Revolution Beats. All Rights Reserved.</p>
+      <p>
+        <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a>
+      </p>
+    </div>
   </div>
 </footer>

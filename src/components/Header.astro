@@ -5,26 +5,24 @@ import '../styles/header.scss';
 <header>
   <div class="container">
     <a href="/" class="logo">
-      <!-- Se aumenta el tamaño del logo (el tamaño se controla en el CSS) -->
-      <img src="/logo.png" alt="Logo" />
+      <img src="logo.png" alt="Logo" />
     </a>
-    <!-- Botón de menú para móvil con icono y texto -->
     <button class="menu-toggle" aria-label="Toggle Navigation">
       <span class="menu-icon">☰</span>
       <span class="menu-text">Menu</span>
     </button>
-    <nav>
+    <nav class="nav">
       <ul>
         <li><a href="/">Home</a></li>
-        <li><a href="/music">Music</a></li>
-        <li><a href="/store">Store</a></li>
-        <li><a href="/contact">Contact</a></li>
+        <li><a href="about">About</a></li>
+        <li><a href="music">Music</a></li>
+        <li><a href="store">Store</a></li>
+        <li><a href="contact">Contact</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-<!-- @ts-ignore para suprimir advertencias en el editor -->
 <script client:load>
   const toggleButton = document.querySelector('.menu-toggle');
   const navList = document.querySelector('nav ul');

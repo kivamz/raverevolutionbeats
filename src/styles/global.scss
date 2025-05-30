@@ -23,10 +23,19 @@ main {
   flex-direction: column;
 }
 
+/* Para dispositivos móviles se desactiva el layout flex en main, de forma que el hero
+   adopte solo la altura necesaria según su contenido. */
+@media (max-width: 768px) {
+  main {
+    flex-grow: 0;
+    display: block;
+  }
+}
+
 /* Limitar el ancho del container para que los elementos se vean más contenidos */
 .container {
   width: 90%;
-  max-width: 1200px; /* Ancho limitado para un look más "contenido" */
+  max-width: 1200px; /* Puedes ajustar este valor si lo prefieres más contenido, ej. 960px */
   margin: 0 auto;
   padding: 0 1rem;
 }
