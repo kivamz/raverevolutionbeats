@@ -11,7 +11,9 @@
     "publish": "npm run build && npm run deploy"
   },
   "dependencies": {
-    "astro": "^5.8.1"
+    "astro": "^5.8.1",
+    "dotenv": "^16.5.0",
+    "mysql2": "^3.14.1"
   },
   "devDependencies": {
     "gh-pages": "^6.3.0",

@@ -1,0 +1,200 @@
+---
+import Layout from '../../../components/Layout.astro';
+import "../../../styles/product-detail.scss";
+
+const colorMap = {
+  "white": "#FFFFFF",
+  "black": "#000000",
+  "navy": "#000080",
+  "purple": "#800080",
+  "red": "#FF0000",
+  "royal": "#4169E1",
+  "charcoal": "#36454F",
+  "heliconia": "#F77F00",
+  "irish green": "#008000",
+  "rs sport grey": "#A9A9A9",
+  "azalea": "#F3C5D5"
+};
+
+function mapColor(color) {
+  if (!color) return color;
+  const lower = color.toLowerCase();
+  return colorMap[lower] || color;
+}
+
+const sampleVariants = [
+  {"id": 4850268392,"color": "Red","size": "L","retail_price": "15.00","thumbnail_url": "https://files.cdn.printful.com/products/849/22197_1738763733.jpg","currency": "EUR"},
+  {"id": 4850268393,"color": "Red","size": "M","retail_price": "15.00","thumbnail_url": "https://files.cdn.printful.com/products/849/22186_1738763743.jpg","currency": "EUR"},
+  {"id": 4850268394,"color": "Red","size": "S","retail_price": "15.00","thumbnail_url": "https://files.cdn.printful.com/products/849/22175_1738763753.jpg","currency": "EUR"},
+  {"id": 4850268395,"color": "Royal","size": "L","retail_price": "15.00","thumbnail_url": "https://files.cdn.printful.com/products/849/royal_l_image.jpg","currency": "EUR"}
+];
+
+export async function getStaticPaths() {
+  const slugify = (str) => str.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+  const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
+  if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) return [];
+  try {
+    const response = await fetch(`${PRINTFUL_API_BASE}store/products`, {
+      headers: {
+        "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    });
+    const data = await response.json();
+    return data.result.map((product) => ({ params: { slug: `${product.id}-${slugify(product.name)}` } }));
+  } catch (error) {
+    console.error("Error generando rutas estáticas:", error);
+    return [];
+  }
+}
+
+const { slug } = Astro.params;
+const productId = slug.split('-')[0];
+const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
+if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) throw new Error(".env incompleto");
+
+const formatEuro = (value, currency = "EUR") =>
+  new Intl.NumberFormat("es-ES", { style: "currency", currency }).format(value);
+
+let product = null;
+try {
+  const res = await fetch(`${PRINTFUL_API_BASE}store/products/${productId}`, {
+    headers: {
+      "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
+      "Content-Type": "application/json"
+    }
+  });
+  const data = await res.json();
+  product = data.result?.sync_product || null;
+  if (product) product.variants = data.result.sync_variants.length ? data.result.sync_variants : sampleVariants;
+} catch (error) {
+  console.error("Error obteniendo producto:", error);
+}
+
+let uniqueColors = [], uniqueSizes = [];
+if (product?.variants?.length) {
+  const colorsSet = new Set(), sizesSet = new Set();
+  product.variants.forEach(v => {
+    if (v.color) colorsSet.add(v.color.trim());
+    if (v.size) sizesSet.add(v.size.trim());
+  });
+  uniqueColors = [...colorsSet];
+  uniqueSizes = [...sizesSet];
+}
+---
+<Layout>
+  <section class="product-detail">
+    <div class="container">
+      {product ? (
+        <>
+          <div class="product-header">
+            <div class="product-image">
+              {product.thumbnail_url && (
+                <img id="main-product-image" src={product.thumbnail_url} alt={product.name} />
+              )}
+            </div>
+            <div class="product-info">
+              <h1>{product.name}</h1>
+              {product.description && <p>{product.description}</p>}
+            </div>
+          </div>
+
+          {uniqueColors.length > 0 && (
+            <>
+              <h2>Selecciona Color</h2>
+              <div class="color-options">
+                {uniqueColors.map(color => (
+                  <div
+                    class="color-swatch"
+                    data-color={color}
+                    style={{ background: mapColor(color) }}
+                    title={color}
+                  ></div>
+                ))}
+              </div>
+            </>
+          )}
+
+          {uniqueSizes.length > 0 && (
+            <>
+              <h2>Selecciona Talla</h2>
+              <div class="size-options">
+                {uniqueSizes.map(size => (
+                  <div class="size-option" data-size={size}>{size}</div>
+                ))}
+              </div>
+            </>
+          )}
+
+          <div class="selected-info">
+            <p>
+              Precio Seleccionado: <span id="selected-price">
+                {product.variants.length > 0 &&
+                  formatEuro(parseFloat(product.variants[0].retail_price || product.variants[0].price || "0"))
+                }
+              </span>
+            </p>
+          </div>
+          
+          <button id="add-to-cart" class="add-to-cart">Añadir al Carrito</button>
+
+          <script id="variants-data" type="application/json">{JSON.stringify(product.variants || [])}</script>
+        </>
+      ) : (
+        <p>Producto no encontrado.</p>
+      )}
+    </div>
+  </section>
+
+  <script type="module">
+    document.addEventListener("DOMContentLoaded", () => {
+      const variantsDataEl = document.getElementById("variants-data");
+      let variants = [];
+      if (variantsDataEl) {
+        try {
+          variants = JSON.parse(variantsDataEl.textContent.trim());
+        } catch (e) {
+          console.error("Error parseando JSON de variantes", e);
+        }
+      }
+
+      let selectedColor = null, selectedSize = null;
+
+      const updateUI = () => {
+        const variant = variants.find(v => v.color === selectedColor && v.size === selectedSize);
+        const priceEl = document.getElementById("selected-price");
+        const imgEl = document.getElementById("main-product-image");
+        if (variant) {
+          priceEl.textContent = new Intl.NumberFormat("es-ES", { style: "currency", currency: variant.currency || "EUR" }).format(parseFloat(variant.retail_price));
+          imgEl.src = variant.thumbnail_url;
+        }
+      };
+
+      document.querySelectorAll(".color-swatch").forEach(swatch => {
+        swatch.addEventListener("click", e => {
+          document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
+          swatch.classList.add("selected");
+          selectedColor = swatch.dataset.color;
+          updateUI();
+        });
+      });
+
+      document.querySelectorAll(".size-option").forEach(opt => {
+        opt.addEventListener("click", e => {
+          document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
+          opt.classList.add("selected");
+          selectedSize = opt.dataset.size;
+          updateUI();
+        });
+      });
+
+      if (variants.length > 0) {
+        selectedColor = variants[0].color;
+        selectedSize = variants[0].size;
+        document.querySelector(`.color-swatch[data-color='${selectedColor}']`)?.classList.add("selected");
+        document.querySelector(`.size-option[data-size='${selectedSize}']`)?.classList.add("selected");
+        updateUI();
+      }
+    });
+  </script>
+</Layout>
