@@ -6,16 +6,26 @@
   toggleButton.addEventListener('click', () => {
     navList.classList.toggle('open');
   });
-</script> <main>  <section class="product-detail"> <div class="container">   <div class="product-header"> <div class="product-image"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <div class="product-info"> <h1>Women’s t-shirt</h1>  </div> </div>  <h2>Select Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background:Black" title="Black"></div><div class="color-swatch" data-color="Navy" style="background:Navy" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background:Purple" title="Purple"></div><div class="color-swatch" data-color="Red" style="background:Red" title="Red"></div><div class="color-swatch" data-color="Royal" style="background:Royal" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background:Heliconia" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background:Charcoal" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background:Irish Green" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background:Azalea" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background:RS Sport Grey" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background:White" title="White"></div> </div>  <h2>Select Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> <div class="selected-info"> <p>Selected Price: <span id="selected-price"> 15,00 € </span></p> </div> <button id="add-to-cart" class="add-to-cart">Add to Cart</button>  <script id="variants-data" type="application/json">{JSON.stringify(product.variants)}</script>  </div> </section>  <script type="module">
+</script> <main>  <section class="product-detail"> <div class="container">   <div class="product-header"> <div class="product-image"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <div class="product-info"> <h1>Women’s t-shirt</h1>  </div> </div>  <h2>Select Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background:Black" title="Black"></div><div class="color-swatch" data-color="Navy" style="background:Navy" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background:Purple" title="Purple"></div><div class="color-swatch" data-color="Red" style="background:Red" title="Red"></div><div class="color-swatch" data-color="Royal" style="background:Royal" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background:Heliconia" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background:Charcoal" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background:Irish Green" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background:Azalea" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background:RS Sport Grey" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background:White" title="White"></div> </div>  <h2>Select Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> <div class="selected-info"> <p>Selected Price: <span id="selected-price"> 15,00 € </span></p> </div> <button id="add-to-cart" class="add-to-cart">Add to Cart</button>  <script id="variants-data" type="application/json">
+            {JSON.stringify(product.variants)}
+          </script>  </div> </section>  <script type="module">
     document.addEventListener('DOMContentLoaded', () => {
       const variantsDataEl = document.getElementById('variants-data');
-      const variants = variantsDataEl ? JSON.parse(variantsDataEl.textContent) : [];
+      const jsonContent = variantsDataEl ? variantsDataEl.textContent.trim() : '{}';
+      
+      let variants;
+      try {
+        variants = JSON.parse(jsonContent);
+      } catch (error) {
+        console.error('Error parsing variants JSON:', error, jsonContent);
+        variants = [];
+      }
       
       let selectedColor = null;
       let selectedSize = null;
       let selectedVariantId = null;
       
-      // Asignar manejadores a las opciones de color
+      // Manejadores para swatches de color
       const colorSwatches = document.querySelectorAll('.color-swatch');
       colorSwatches.forEach(swatch => {
         swatch.addEventListener('click', function() {
@@ -27,7 +37,7 @@
         });
       });
       
-      // Asignar manejadores a las opciones de talla
+      // Manejadores para las opciones de talla
       const sizeOptions = document.querySelectorAll('.size-option');
       sizeOptions.forEach(option => {
         option.addEventListener('click', function() {
@@ -41,47 +51,52 @@
       
       function updateVariantSelection() {
         console.log('Update variant selection:', selectedColor, selectedSize);
-        let foundVariant;
+        let foundVariant = null;
         if (selectedColor && selectedSize) {
-          // Buscar variante que coincida con ambas opciones
           foundVariant = variants.find(v => {
-            if (!v.options || !Array.isArray(v.options)) {
-              return v.color === selectedColor && v.size === selectedSize;
-            }
-            const colorOpt = v.options.find(opt => opt && opt.name && typeof opt.name === 'string' && opt.name.toLowerCase() === 'color');
-            const sizeOpt = v.options.find(opt => opt && opt.name && typeof opt.name === 'string' && opt.name.toLowerCase() === 'size');
-            if (colorOpt && sizeOpt) {
-              return colorOpt.value === selectedColor && sizeOpt.value === selectedSize;
-            }
-            return v.color === selectedColor && v.size === selectedSize;
+            // Convertir ambas comparaciones a minúsculas y trimear
+            const vColor = (v.color || "").toString().trim().toLowerCase();
+            const vSize  = (v.size || "").toString().trim().toLowerCase();
+            return vColor === selectedColor.trim().toLowerCase() &&
+                   vSize  === selectedSize.trim().toLowerCase();
           });
-        } else if (selectedColor) {
-          // Si solo se ha seleccionado color, buscar la primera variante que tenga ese color
-          foundVariant = variants.find(v => v.color === selectedColor) ||
-                         variants.find(v => {
-                           if (!v.options || !Array.isArray(v.options)) return false;
-                           const colorOpt = v.options.find(opt => opt && opt.name && typeof opt.name === 'string' && opt.name.toLowerCase() === 'color');
-                           return colorOpt && colorOpt.value === selectedColor;
-                         });
-        } else if (selectedSize) {
-          // Si solo se ha seleccionado talla
-          foundVariant = variants.find(v => v.size === selectedSize);
         }
+        if (!foundVariant && selectedColor) {
+          // Si solo se ha seleccionado color, buscar la primera variante que coincida
+          foundVariant = variants.find(v => {
+            const vColor = (v.color || "").toString().trim().toLowerCase();
+            return vColor === selectedColor.trim().toLowerCase();
+          });
+        }
+        if (!foundVariant && selectedSize) {
+          foundVariant = variants.find(v => {
+            const vSize = (v.size || "").toString().trim().toLowerCase();
+            return vSize === selectedSize.trim().toLowerCase();
+          });
+        }
+        // Fallback: si aún no se encontró, usar la primera variante disponible (si existe)
+        if (!foundVariant && variants.length > 0) {
+          foundVariant = variants[0];
+        }
+        
         console.log('Found variant:', foundVariant);
         if (foundVariant) {
           selectedVariantId = foundVariant.id;
-          // Actualizar imagen principal si la variante tiene imagen propia
           if (foundVariant.thumbnail_url && foundVariant.thumbnail_url.trim() !== '') {
             const mainImage = document.getElementById('main-product-image');
             if (mainImage) {
               mainImage.setAttribute('src', foundVariant.thumbnail_url);
             }
           }
-          // Actualizar precio
-          const priceValue = parseFloat(foundVariant.retail_price || foundVariant.price || '0');
+          const rawPrice =
+            (foundVariant.retail_price && foundVariant.retail_price !== "null")
+              ? foundVariant.retail_price
+              : ((foundVariant.price && foundVariant.price !== "null") ? foundVariant.price : "0");
+          const priceValue = parseFloat(rawPrice);
+          const currency = foundVariant.currency ? foundVariant.currency : "EUR";
           document.getElementById('selected-price').textContent = isNaN(priceValue)
             ? "Price not available"
-            : new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR' }).format(priceValue);
+            : new Intl.NumberFormat('es-ES', { style: 'currency', currency }).format(priceValue);
         } else {
           selectedVariantId = null;
           document.getElementById('selected-price').textContent = "N/A";
