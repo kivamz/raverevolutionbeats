@@ -2,7 +2,7 @@
 import Layout from '../../../components/Layout.astro';
 import "../../../styles/product-detail.scss";
 
-// Objeto fallback para el color, en caso de que una variante no tenga color_code.
+// Objeto fallback para el color.
 const colorMap = {
   "white": "#FFFFFF",
   "black": "#000000",
@@ -20,7 +20,11 @@ const colorMap = {
 // getStaticPaths utiliza solo PRINTFUL_ACCESS_TOKEN.
 export async function getStaticPaths() {
   const slugify = (str) =>
-    str.trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    str
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, '-')
+      .replace(/(^-|-$)/g, '');
   const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
   if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) return [];
   try {
@@ -50,9 +54,9 @@ if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN)
 const formatEuro = (value, currency = "EUR") =>
   new Intl.NumberFormat("es-ES", { style: "currency", currency }).format(value);
 
-// Función para obtener la información completa de una variante usando GET /products/variant/{id}.
-// Se usa variant.variant_id si existe; de lo contrario, se usa variant.id.
+// Función para obtener variante enriquecida (GET /products/variant/{id}).
 async function getVariantComplete(id) {
+  console.log("Llamada a getVariantComplete para id:", id);
   try {
     const res = await fetch(`${PRINTFUL_API_BASE}products/variant/${id}`, {
       headers: {
@@ -61,10 +65,11 @@ async function getVariantComplete(id) {
       }
     });
     const json = await res.json();
+    console.log("Respuesta de getVariantComplete para id:", id, "json:", json);
     if (json && json.code === 200 && json.result && json.result.variant) {
       return json.result.variant;
     }
-    console.error("Respuesta inesperada para la variante", id, json);
+    console.error("Respuesta inesperada para variante", id, json);
     return undefined;
   } catch (error) {
     console.error("Error en getVariantComplete:", error);
@@ -74,7 +79,7 @@ async function getVariantComplete(id) {
 
 let product = null;
 try {
-  // Obtenemos el producto básico y sus variantes sincronizadas.
+  console.log("Obteniendo producto con id:", productId);
   const res = await fetch(`${PRINTFUL_API_BASE}store/products/${productId}`, {
     headers: {
       "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
@@ -82,10 +87,11 @@ try {
     }
   });
   const data = await res.json();
+  console.log("Respuesta del producto:", data);
   product = data.result?.sync_product || null;
   if (product) {
-    const basicVariants = data.result.sync_variants?.length ? data.result.sync_variants : [];
-    // Se enriquecen las variantes: Si el endpoint devuelve datos enriquecidos, se fusiona copiendo el precio básico.
+    const basicVariants = data.result.sync_variants || [];
+    product.sync_variants = basicVariants; // Guardamos fallback.
     product.variants = await Promise.all(
       basicVariants.map(async (variant) => {
         const idToUse = variant.variant_id ? variant.variant_id : variant.id;
@@ -95,6 +101,12 @@ try {
           : variant;
       })
     );
+    if (!product.variants.length && basicVariants.length) {
+      console.log("Producto.variants vacío; usando basicVariants como fallback");
+      product.variants = basicVariants;
+    }
+    console.log("Producto final con variantes:", product);
+    console.log("JSON de variantes a inyectar:", JSON.stringify(product.variants || []));
   }
 } catch (error) {
   console.error("Error obteniendo producto:", error);
@@ -156,7 +168,9 @@ if (product?.variants?.length) {
                   <h2>Size</h2>
                   <div class="size-options">
                     {uniqueSizes.map(size => (
-                      <div class="size-option" data-size={size}>{size}</div>
+                      <div class="size-option" data-size={size}>
+                        {size}
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -170,13 +184,16 @@ if (product?.variants?.length) {
                     )}
                 </span>
               </div>
-              <button id="add-to-cart" class="add-to-cart" disabled>
-                Add to Cart
-              </button>
+              <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button>
+              <!-- Mensaje de confirmación -->
+              <div id="cart-message" style="display: none; margin-top: 10px; color: green; font-weight: bold;">
+                Producto añadido al carrito!
+              </div>
             </aside>
           </div>
-          <!-- Incrustamos el JSON en una sola línea para asegurar que sea válido -->
-          <script id="variants-data" type="application/json">{JSON.stringify(product.variants || [])}</script>
+          <!-- Inyectamos variantes y producto en un JSON (forzado a usar fallback si es necesario) -->
+          <script id="variants-data" type="application/json">{JSON.stringify((product.variants && product.variants.length) ? product.variants : (product.sync_variants || []))}</script>
+          <script id="product-data" type="application/json">{JSON.stringify(product)}</script>
         </>
       ) : (
         <p>Producto no encontrado.</p>
@@ -191,82 +208,189 @@ if (product?.variants?.length) {
   
   <script type="module">
     document.addEventListener("DOMContentLoaded", () => {
+      // Configuración del modal
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
   
+      // Recuperar variantes desde la etiqueta "variants-data"
       const variantsDataEl = document.getElementById("variants-data");
       let variants = [];
       if (variantsDataEl) {
         try {
           variants = JSON.parse(variantsDataEl.textContent.trim());
+          console.log("Variantes parseadas desde 'variants-data' (length:", variants.length, "):", variants);
         } catch (e) {
           console.error("Error parseando JSON de variantes", e);
         }
       }
   
+      // Recuperar producto desde la etiqueta "product-data"
+      let product = {};
+      const productDataEl = document.getElementById("product-data");
+      if (productDataEl) {
+        try {
+          product = JSON.parse(productDataEl.textContent.trim());
+          console.log("Producto parseado desde 'product-data':", product);
+        } catch (e) {
+          console.error("Error parseando JSON de producto", e);
+        }
+      }
+  
+      // Fallback: si variants es vacío, usar product.sync_variants si existe.
+      if (!variants.length && product.sync_variants && product.sync_variants.length) {
+        variants = product.sync_variants;
+        console.log("Usando product.sync_variants como fallback. Variantes (length:", variants.length, "):", variants);
+      }
+  
+      console.log("Producto cargado:", product, "Variantes finales (length:", variants.length, "):", variants);
+  
       let selectedColor = null, selectedSize = null;
   
       const updateUI = () => {
-        const priceEl = document.getElementById("selected-price");
-        const imgEl = document.getElementById("main-product-image");
-        if (!variants.length) return;
-        if (selectedColor && selectedSize) {
-          const variant = variants.find(v => {
-            const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-            const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-            return variantColor === selectedColor.trim().toLowerCase() &&
-                   variantSize === selectedSize.trim().toLowerCase();
-          });
-          if (variant && imgEl && priceEl) {
-            priceEl.textContent = new Intl.NumberFormat("es-ES", {
-              style: "currency",
-              currency: variant.currency || "EUR"
-            }).format(parseFloat(variant.retail_price));
-            imgEl.src = variant.thumbnail_url;
+        try {
+          console.log("updateUI INICIO: color:", selectedColor, "talla:", selectedSize);
+          const priceEl = document.getElementById("selected-price");
+          const imgEl = document.getElementById("main-product-image");
+          console.log("updateUI: Elementos UI: priceEl:", priceEl, "imgEl:", imgEl);
+          console.log("updateUI: Variantes disponibles (length:", variants.length, "):", variants);
+          if (!variants.length) { 
+            console.log("No hay variantes disponibles");
+            return; 
+          }
+  
+          if (selectedColor && selectedSize) {
+            console.log("Buscando variante para:", selectedColor, selectedSize);
+            const variant = variants.find(v => {
+              const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+              const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+              console.log("updateUI - Comparando variante: color:", variantColor, "talla:", variantSize);
+              return variantColor === selectedColor.trim().toLowerCase() &&
+                     variantSize === selectedSize.trim().toLowerCase();
+            });
+            console.log("updateUI - Resultado de búsqueda:", variant);
+            if (variant && imgEl && priceEl) {
+              console.log("updateUI - Variante encontrada, actualizando precio e imagen.");
+              priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: variant.currency || "EUR"
+              }).format(parseFloat(variant.retail_price));
+              imgEl.src = variant.thumbnail_url;
+            } else {
+              console.log("updateUI - No se encontró variante específica, usando precio mínimo.");
+              const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+              priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: variants[0].currency || "EUR"
+              }).format(lowestPrice);
+            }
           } else {
+            console.log("updateUI - Combinación incompleta, mostrando precio mínimo.");
             const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
             priceEl.textContent = new Intl.NumberFormat("es-ES", {
               style: "currency",
               currency: variants[0].currency || "EUR"
             }).format(lowestPrice);
           }
-        } else {
-          const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-          priceEl.textContent = new Intl.NumberFormat("es-ES", {
-            style: "currency",
-            currency: variants[0].currency || "EUR"
-          }).format(lowestPrice);
-        }
   
-        const addBtn = document.getElementById("add-to-cart");
-        if (selectedColor && selectedSize) {
-          addBtn.disabled = false;
-          addBtn.style.opacity = 1;
-        } else {
-          addBtn.disabled = true;
-          addBtn.style.opacity = 0.5;
+          const addBtn = document.getElementById("add-to-cart");
+          if (selectedColor && selectedSize) {
+            addBtn.disabled = false;
+            addBtn.style.opacity = 1;
+          } else {
+            addBtn.disabled = true;
+            addBtn.style.opacity = 0.5;
+          }
+          console.log("updateUI FINALIZADO: color:", selectedColor, "talla:", selectedSize);
+        } catch (error) {
+          console.error("Error en updateUI:", error);
         }
       };
   
+      // Función para agregar al carrito.
+      const addToCart = () => {
+        if (!selectedColor || !selectedSize) return;
+  
+        const variant = variants.find(v => {
+          const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+          const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+          return variantColor === selectedColor.trim().toLowerCase() &&
+                 variantSize === selectedSize.trim().toLowerCase();
+        });
+  
+        if (!variant) {
+          alert("La combinación seleccionada no existe.");
+          return;
+        }
+  
+        const cartItem = {
+          productId: productId,
+          variantId: variant.id,
+          name: document.querySelector(".product-title")?.textContent || "",
+          color: variant.color,
+          size: variant.size,
+          price: parseFloat(variant.retail_price || variant.price),
+          quantity: 1,
+          thumbnail: variant.thumbnail_url,
+          currency: variant.currency || "EUR"
+        };
+  
+        console.log("addToCart - Añadiendo al carrito:", cartItem);
+  
+        let cart = [];
+        try {
+          cart = JSON.parse(localStorage.getItem("cart") || "[]");
+          console.log("addToCart - Carrito previo:", cart);
+        } catch (e) {
+          console.error("Error parseando carrito:", e);
+        }
+  
+        const existingIndex = cart.findIndex(item => item.variantId === cartItem.variantId);
+        if (existingIndex > -1) {
+          cart[existingIndex].quantity += 1;
+        } else {
+          cart.push(cartItem);
+        }
+  
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log("addToCart - Carrito actualizado:", cart);
+  
+        const cartMessageEl = document.getElementById("cart-message");
+        if (cartMessageEl) {
+          cartMessageEl.style.display = "block";
+          setTimeout(() => {
+            cartMessageEl.style.display = "none";
+          }, 3000);
+        }
+      };
+  
+      // Eventos para selección de color.
       document.querySelectorAll(".color-swatch").forEach(swatch => {
         swatch.addEventListener("click", () => {
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
           swatch.classList.add("selected");
           selectedColor = swatch.dataset.color;
+          console.log("Color seleccionado:", selectedColor);
           updateUI();
         });
       });
   
+      // Eventos para selección de talla.
       document.querySelectorAll(".size-option").forEach(opt => {
         opt.addEventListener("click", () => {
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
           opt.classList.add("selected");
           selectedSize = opt.dataset.size;
+          console.log("Talla seleccionada:", selectedSize);
           updateUI();
         });
       });
   
       updateUI();
+  
+      document.getElementById("add-to-cart").addEventListener("click", () => {
+        console.log("Botón 'Add to Cart' presionado");
+        addToCart();
+      });
   
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
@@ -283,6 +407,7 @@ if (product?.variants?.length) {
           modal.style.display = "none";
         });
       }
+  
       if (modal) {
         modal.addEventListener("click", (e) => {
           if (e.target === modal) {
