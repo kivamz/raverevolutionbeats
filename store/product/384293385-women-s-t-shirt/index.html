@@ -6,17 +6,13 @@
   toggleButton.addEventListener('click', () => {
     navList.classList.toggle('open');
   });
-</script> <main>  <section class="product-detail"> <div class="container">   <div class="product-header"> <h1 class="product-title">Women’s t-shirt</h1>  </div>  <div class="product-flex"> <div class="image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#090909" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#16263f" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#4a1c7d" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#ff1b1b" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#2665cc" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#e33f7a" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#74716b" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#00b365" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background-color:#ff94ba" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background-color:#bebbba" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background-color:#ffffff" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> </div> <div class="price-display"> <span id="selected-price"> 17,00 € </span> </div> <button id="add-to-cart" class="add-to-cart" disabled>
+</script> <main>  <section class="product-detail"> <div class="container">  <div class="product-header"> <h1 class="product-title">Women’s t-shirt</h1>  </div> <div class="product-flex"> <div class="image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#090909" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#16263f" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#4a1c7d" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#ff1b1b" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#2665cc" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#e33f7a" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#74716b" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#00b365" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background-color:#ff94ba" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background-color:#bebbba" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background-color:#ffffff" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S">S</div><div class="size-option" data-size="M">M</div><div class="size-option" data-size="L">L</div><div class="size-option" data-size="XL">XL</div><div class="size-option" data-size="2XL">2XL</div> </div> </div> <div class="price-display"> <span id="selected-price"> 17,00 € </span> </div> <button id="add-to-cart" class="add-to-cart" disabled>
 Add to Cart
-</button> </aside> </div> <script id="variants-data" type="application/json">
-            {JSON.stringify(product.variants || [])}
-          </script>  </div> </section>  <div id="modal" class="modal"> <span id="modal-close" class="modal-close">&times;</span> <img class="modal-content" id="modal-image" alt="Enlarged Image"> </div> <script type="module">
+</button> </aside> </div>  <script id="variants-data" type="application/json">{JSON.stringify(product.variants || [])}</script>  </div> </section> <div id="modal" class="modal"> <span id="modal-close" class="modal-close">&times;</span> <img class="modal-content" id="modal-image" alt="Enlarged Image"> </div> <script type="module">
     document.addEventListener("DOMContentLoaded", () => {
-      // Aseguramos que el modal inicie oculto.
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
-
-      // Obtenemos las variantes desde el JSON embebido.
+  
       const variantsDataEl = document.getElementById("variants-data");
       let variants = [];
       if (variantsDataEl) {
@@ -26,39 +22,41 @@ Add to Cart
           console.error("Error parseando JSON de variantes", e);
         }
       }
-
+  
       let selectedColor = null, selectedSize = null;
-
-      // Función para actualizar la UI.
+  
       const updateUI = () => {
         const priceEl = document.getElementById("selected-price");
         const imgEl = document.getElementById("main-product-image");
-
+        if (!variants.length) return;
         if (selectedColor && selectedSize) {
-          const variant = variants.find(
-            v =>
-              v.color.trim().toLowerCase() === selectedColor?.trim().toLowerCase() &&
-              v.size.trim().toLowerCase() === selectedSize?.trim().toLowerCase()
-          );
+          const variant = variants.find(v => {
+            const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+            const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+            return variantColor === selectedColor.trim().toLowerCase() &&
+                   variantSize === selectedSize.trim().toLowerCase();
+          });
           if (variant && imgEl && priceEl) {
             priceEl.textContent = new Intl.NumberFormat("es-ES", {
               style: "currency",
               currency: variant.currency || "EUR"
             }).format(parseFloat(variant.retail_price));
             imgEl.src = variant.thumbnail_url;
+          } else {
+            const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+            priceEl.textContent = new Intl.NumberFormat("es-ES", {
+              style: "currency",
+              currency: variants[0].currency || "EUR"
+            }).format(lowestPrice);
           }
         } else {
-          if (variants.length) {
-            const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-            if (priceEl) {
-              priceEl.textContent = new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: variants[0].currency || "EUR"
-              }).format(lowestPrice);
-            }
-          }
+          const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+          priceEl.textContent = new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency: variants[0].currency || "EUR"
+          }).format(lowestPrice);
         }
-        
+  
         const addBtn = document.getElementById("add-to-cart");
         if (selectedColor && selectedSize) {
           addBtn.disabled = false;
@@ -68,8 +66,7 @@ Add to Cart
           addBtn.style.opacity = 0.5;
         }
       };
-
-      // Eventos en las swatches de color.
+  
       document.querySelectorAll(".color-swatch").forEach(swatch => {
         swatch.addEventListener("click", () => {
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
@@ -78,8 +75,7 @@ Add to Cart
           updateUI();
         });
       });
-
-      // Eventos en las opciones de tamaño.
+  
       document.querySelectorAll(".size-option").forEach(opt => {
         opt.addEventListener("click", () => {
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
@@ -88,10 +84,9 @@ Add to Cart
           updateUI();
         });
       });
-
+  
       updateUI();
-
-      // Modal: Abrir modal al hacer clic en la imagen principal.
+  
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
       const mainImg = document.getElementById("main-product-image");
@@ -101,8 +96,7 @@ Add to Cart
           modalImg.src = mainImg.src;
         });
       }
-
-      // Cerrar modal.
+  
       if (modalCloseElem) {
         modalCloseElem.addEventListener("click", () => {
           modal.style.display = "none";
