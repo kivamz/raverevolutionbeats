@@ -6,86 +6,193 @@
   toggleButton.addEventListener('click', () => {
     navList.classList.toggle('open');
   });
-</script> <main>  <section class="product-detail"> <div class="container">  <div class="product-header"> <h1 class="product-title">Unisex Hoodie</h1>  </div> <div class="product-flex"> <div class="image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/fe3/fe355b3013400db86e49392ddaecd395_preview.png" alt="Unisex Hoodie"> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#0b0b0b" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#131928" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#4A1C7D" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#da0a1a" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#1D50A4" title="Royal"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#534E4A" title="Charcoal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#F63880" title="Heliconia"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#1d9345" title="Irish Green"></div><div class="color-swatch" data-color="White" style="background-color:#ffffff" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S">S</div><div class="size-option" data-size="M">M</div><div class="size-option" data-size="L">L</div><div class="size-option" data-size="XL">XL</div><div class="size-option" data-size="2XL">2XL</div> </div> </div> <div class="price-display"> <span id="selected-price"> 27,50 € </span> </div> <button id="add-to-cart" class="add-to-cart" disabled>
-Add to Cart
-</button> </aside> </div>  <script id="variants-data" type="application/json">{JSON.stringify(product.variants || [])}</script>  </div> </section> <div id="modal" class="modal"> <span id="modal-close" class="modal-close">&times;</span> <img class="modal-content" id="modal-image" alt="Enlarged Image"> </div> <script type="module">
+</script> <main>  <section class="product-detail"> <div class="container">  <div class="product-header"> <h1 class="product-title">Unisex Hoodie</h1>  </div> <div class="product-flex"> <div class="image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/fe3/fe355b3013400db86e49392ddaecd395_preview.png" alt="Unisex Hoodie"> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#0b0b0b" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#131928" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#4A1C7D" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#da0a1a" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#1D50A4" title="Royal"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#534E4A" title="Charcoal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#F63880" title="Heliconia"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#1d9345" title="Irish Green"></div><div class="color-swatch" data-color="White" style="background-color:#ffffff" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> </div> <div class="price-display"> <span id="selected-price"> 27,50 € </span> </div> <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button> <!-- Mensaje de confirmación --> <div id="cart-message" style="display: none; margin-top: 10px; color: green; font-weight: bold;">
+Producto añadido al carrito!
+</div> </aside> </div>  <script id="variants-data" type="application/json">{JSON.stringify((product.variants && product.variants.length) ? product.variants : (product.sync_variants || []))}</script> <script id="product-data" type="application/json">{JSON.stringify(product)}</script>  </div> </section> <div id="modal" class="modal"> <span id="modal-close" class="modal-close">&times;</span> <img class="modal-content" id="modal-image" alt="Enlarged Image"> </div> <script type="module">
     document.addEventListener("DOMContentLoaded", () => {
+      // Configuración del modal
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
   
+      // Recuperar variantes desde la etiqueta "variants-data"
       const variantsDataEl = document.getElementById("variants-data");
       let variants = [];
       if (variantsDataEl) {
         try {
           variants = JSON.parse(variantsDataEl.textContent.trim());
+          console.log("Variantes parseadas desde 'variants-data' (length:", variants.length, "):", variants);
         } catch (e) {
           console.error("Error parseando JSON de variantes", e);
         }
       }
   
+      // Recuperar producto desde la etiqueta "product-data"
+      let product = {};
+      const productDataEl = document.getElementById("product-data");
+      if (productDataEl) {
+        try {
+          product = JSON.parse(productDataEl.textContent.trim());
+          console.log("Producto parseado desde 'product-data':", product);
+        } catch (e) {
+          console.error("Error parseando JSON de producto", e);
+        }
+      }
+  
+      // Fallback: si variants es vacío, usar product.sync_variants si existe.
+      if (!variants.length && product.sync_variants && product.sync_variants.length) {
+        variants = product.sync_variants;
+        console.log("Usando product.sync_variants como fallback. Variantes (length:", variants.length, "):", variants);
+      }
+  
+      console.log("Producto cargado:", product, "Variantes finales (length:", variants.length, "):", variants);
+  
       let selectedColor = null, selectedSize = null;
   
       const updateUI = () => {
-        const priceEl = document.getElementById("selected-price");
-        const imgEl = document.getElementById("main-product-image");
-        if (!variants.length) return;
-        if (selectedColor && selectedSize) {
-          const variant = variants.find(v => {
-            const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-            const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-            return variantColor === selectedColor.trim().toLowerCase() &&
-                   variantSize === selectedSize.trim().toLowerCase();
-          });
-          if (variant && imgEl && priceEl) {
-            priceEl.textContent = new Intl.NumberFormat("es-ES", {
-              style: "currency",
-              currency: variant.currency || "EUR"
-            }).format(parseFloat(variant.retail_price));
-            imgEl.src = variant.thumbnail_url;
+        try {
+          console.log("updateUI INICIO: color:", selectedColor, "talla:", selectedSize);
+          const priceEl = document.getElementById("selected-price");
+          const imgEl = document.getElementById("main-product-image");
+          console.log("updateUI: Elementos UI: priceEl:", priceEl, "imgEl:", imgEl);
+          console.log("updateUI: Variantes disponibles (length:", variants.length, "):", variants);
+          if (!variants.length) { 
+            console.log("No hay variantes disponibles");
+            return; 
+          }
+  
+          if (selectedColor && selectedSize) {
+            console.log("Buscando variante para:", selectedColor, selectedSize);
+            const variant = variants.find(v => {
+              const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+              const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+              console.log("updateUI - Comparando variante: color:", variantColor, "talla:", variantSize);
+              return variantColor === selectedColor.trim().toLowerCase() &&
+                     variantSize === selectedSize.trim().toLowerCase();
+            });
+            console.log("updateUI - Resultado de búsqueda:", variant);
+            if (variant && imgEl && priceEl) {
+              console.log("updateUI - Variante encontrada, actualizando precio e imagen.");
+              priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: variant.currency || "EUR"
+              }).format(parseFloat(variant.retail_price));
+              imgEl.src = variant.thumbnail_url;
+            } else {
+              console.log("updateUI - No se encontró variante específica, usando precio mínimo.");
+              const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+              priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                style: "currency",
+                currency: variants[0].currency || "EUR"
+              }).format(lowestPrice);
+            }
           } else {
+            console.log("updateUI - Combinación incompleta, mostrando precio mínimo.");
             const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
             priceEl.textContent = new Intl.NumberFormat("es-ES", {
               style: "currency",
               currency: variants[0].currency || "EUR"
             }).format(lowestPrice);
           }
-        } else {
-          const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-          priceEl.textContent = new Intl.NumberFormat("es-ES", {
-            style: "currency",
-            currency: variants[0].currency || "EUR"
-          }).format(lowestPrice);
-        }
   
-        const addBtn = document.getElementById("add-to-cart");
-        if (selectedColor && selectedSize) {
-          addBtn.disabled = false;
-          addBtn.style.opacity = 1;
-        } else {
-          addBtn.disabled = true;
-          addBtn.style.opacity = 0.5;
+          const addBtn = document.getElementById("add-to-cart");
+          if (selectedColor && selectedSize) {
+            addBtn.disabled = false;
+            addBtn.style.opacity = 1;
+          } else {
+            addBtn.disabled = true;
+            addBtn.style.opacity = 0.5;
+          }
+          console.log("updateUI FINALIZADO: color:", selectedColor, "talla:", selectedSize);
+        } catch (error) {
+          console.error("Error en updateUI:", error);
         }
       };
   
+      // Función para agregar al carrito.
+      const addToCart = () => {
+        if (!selectedColor || !selectedSize) return;
+  
+        const variant = variants.find(v => {
+          const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+          const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+          return variantColor === selectedColor.trim().toLowerCase() &&
+                 variantSize === selectedSize.trim().toLowerCase();
+        });
+  
+        if (!variant) {
+          alert("La combinación seleccionada no existe.");
+          return;
+        }
+  
+        const cartItem = {
+          productId: productId,
+          variantId: variant.id,
+          name: document.querySelector(".product-title")?.textContent || "",
+          color: variant.color,
+          size: variant.size,
+          price: parseFloat(variant.retail_price || variant.price),
+          quantity: 1,
+          thumbnail: variant.thumbnail_url,
+          currency: variant.currency || "EUR"
+        };
+  
+        console.log("addToCart - Añadiendo al carrito:", cartItem);
+  
+        let cart = [];
+        try {
+          cart = JSON.parse(localStorage.getItem("cart") || "[]");
+          console.log("addToCart - Carrito previo:", cart);
+        } catch (e) {
+          console.error("Error parseando carrito:", e);
+        }
+  
+        const existingIndex = cart.findIndex(item => item.variantId === cartItem.variantId);
+        if (existingIndex > -1) {
+          cart[existingIndex].quantity += 1;
+        } else {
+          cart.push(cartItem);
+        }
+  
+        localStorage.setItem("cart", JSON.stringify(cart));
+        console.log("addToCart - Carrito actualizado:", cart);
+  
+        const cartMessageEl = document.getElementById("cart-message");
+        if (cartMessageEl) {
+          cartMessageEl.style.display = "block";
+          setTimeout(() => {
+            cartMessageEl.style.display = "none";
+          }, 3000);
+        }
+      };
+  
+      // Eventos para selección de color.
       document.querySelectorAll(".color-swatch").forEach(swatch => {
         swatch.addEventListener("click", () => {
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
           swatch.classList.add("selected");
           selectedColor = swatch.dataset.color;
+          console.log("Color seleccionado:", selectedColor);
           updateUI();
         });
       });
   
+      // Eventos para selección de talla.
       document.querySelectorAll(".size-option").forEach(opt => {
         opt.addEventListener("click", () => {
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
           opt.classList.add("selected");
           selectedSize = opt.dataset.size;
+          console.log("Talla seleccionada:", selectedSize);
           updateUI();
         });
       });
   
       updateUI();
+  
+      document.getElementById("add-to-cart").addEventListener("click", () => {
+        console.log("Botón 'Add to Cart' presionado");
+        addToCart();
+      });
   
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
@@ -102,6 +209,7 @@ Add to Cart
           modal.style.display = "none";
         });
       }
+  
       if (modal) {
         modal.addEventListener("click", (e) => {
           if (e.target === modal) {
