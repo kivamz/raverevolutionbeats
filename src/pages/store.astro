@@ -22,9 +22,6 @@ interface ProductDetail extends Product {
   variants: Variant[];
 }
 
-const site = import.meta.env.SITE || '';
-
-// Configuración de la API de Printful desde las variables de entorno.
 const PRINTFUL_API_BASE = import.meta.env.PRINTFUL_API_BASE;
 const PRINTFUL_ACCESS_TOKEN = import.meta.env.PRINTFUL_ACCESS_TOKEN;
 
@@ -48,14 +45,12 @@ try {
     console.error("Printful API response error:", response.statusText);
   } else {
     const productsData = await response.json();
-    // Se asume que la respuesta contiene una propiedad "result" con el array de productos.
     products = productsData.result || [];
   }
 } catch (error) {
   console.error('Error fetching products:', error);
 }
 
-// Enriquecemos cada producto con los detalles de sus variantes (incluyendo precios).
 let detailedProducts: ProductDetail[] = [];
 
 if (products.length > 0) {
@@ -70,9 +65,7 @@ if (products.length > 0) {
         });
         if (resDetail.ok) {
           const detailData = await resDetail.json();
-          // Imprime en consola la respuesta completa para revisar la estructura
           console.log(`Detail for product ${prod.id}:`, detailData);
-          // Las variantes se encuentran en "sync_variants" (o en "variants" si no existiera sync_variants).
           if (detailData && detailData.result && (detailData.result.variants || detailData.result.sync_variants)) {
             const variants = detailData.result.variants || detailData.result.sync_variants;
             return { ...prod, variants } as ProductDetail;
@@ -92,14 +85,12 @@ if (products.length > 0) {
   );
 }
 
-// Función para formatear a euros usando Intl.NumberFormat.
 const formatEuro = (value: number) =>
   new Intl.NumberFormat('es-ES', {
     style: 'currency',
     currency: 'EUR'
   }).format(value);
 
-// Función para crear un slug URL-friendly a partir del nombre del producto.
 const slugify = (str: string): string =>
   str
     .toLowerCase()
@@ -117,7 +108,7 @@ const slugify = (str: string): string =>
           <a 
             class="product-link" 
             href={`store/product/${product.id}-${slugify(product.name)}`} 
-            key={product.id}
+            data-key={product.id}
           >
             <div class="product">
               {product.thumbnail_url && (
