@@ -1,26 +1,334 @@
 ---
 import Layout from '../components/Layout.astro';
 import "../styles/music.scss";
+
+// SEO metadata
+const pageTitle = "Music - Rave Revolution Beats | Stream Our Latest Electronic Tracks";
+const pageDescription = "Discover our electronic music on all major platforms: Spotify, Apple Music, YouTube, SoundCloud, Beatport, Tidal, and Deezer. Stream the latest beats and immersive soundscapes.";
+const pageKeywords = "electronic music, streaming, Spotify, Apple Music, YouTube Music, SoundCloud, Beatport, Tidal, Deezer, techno, house, trance, EDM";
+const canonicalURL = "https://yourdomain.com/music/";
+
+// Structured data for music
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "Rave Revolution Beats",
+  "description": pageDescription,
+  "url": canonicalURL,
+  "genre": ["Electronic", "Techno", "House", "Trance", "EDM"],
+  "foundingDate": "2025",
+  "sameAs": [
+    "https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1",
+    "https://music.apple.com/es/artist/rave-revolution-beats/1807818727",
+    "https://youtube.com/@raverevolutionbeats",
+    "https://www.soundcloud.com/rave-revolution-beats",
+    "https://www.beatport.com/es/artist/rave-revolution-beats/1305790",
+    "https://tidal.com/artist/56583093",
+    "https://www.deezer.com/es/artist/317486241"
+  ]
+};
 ---
-<Layout>
-  <section class="music">
-    <div class="container">
-      <h1>Our Music</h1>
-      <p>Explore our exclusive collection of music tracks, albums, and playlists curated for your listening pleasure.</p>
-      <div class="album-grid">
-        <article class="album-item">
-          <img src="https://placehold.co/300x300/121212/ffffff?text=Album+1" alt="Album 1" />
-          <h2>Album 1</h2>
-        </article>
-        <article class="album-item">
-          <img src="https://placehold.co/300x300/121212/ffffff?text=Album+2" alt="Album 2" />
-          <h2>Album 2</h2>
-        </article>
-        <article class="album-item">
-          <img src="https://placehold.co/300x300/121212/ffffff?text=Album+3" alt="Album 3" />
-          <h2>Album 3</h2>
-        </article>
+<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} canonicalURL={canonicalURL}>
+  <!-- Structured Data for SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  
+  <!-- Breadcrumb structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://yourdomain.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "Music",
+        "item": "https://yourdomain.com/music/"
+      }
+    ]
+  }
+  </script>
+  
+  <main>
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">Music</li>
+      </ol>
+    </nav>
+    
+    <section class="music" itemscope itemtype="https://schema.org/MusicGroup">
+      <div class="container">
+        <header class="music-header">
+          <h1 itemprop="name">Our Music</h1>
+          <p class="subtitle" itemprop="description">
+            Experience our electronic soundscapes across all major streaming platforms. From progressive house to techno, discover tracks that define the future of electronic music.
+          </p>
+        </header>
+        
+        <div class="music-content">
+          <!-- Streaming Platforms Section -->
+          <section class="streaming-section" aria-label="Streaming Platforms">
+            <h2 class="section-title">Stream Our Music</h2>
+            <p class="section-description">
+              Available on all major music platforms. Choose your preferred service and dive into our sonic universe.
+            </p>
+            
+            <div class="platforms-grid">
+              <a href="https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card spotify"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-brands fa-spotify"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">Spotify</div>
+                  <div class="platform-description">Stream our latest releases and curated playlists</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://music.apple.com/es/artist/rave-revolution-beats/1807818727" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card apple-music"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-brands fa-apple"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">Apple Music</div>
+                  <div class="platform-description">High-quality audio streaming experience</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://youtube.com/@raverevolutionbeats" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card youtube"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-brands fa-youtube"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">YouTube Music</div>
+                  <div class="platform-description">Music videos, live sessions, and exclusives</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://www.soundcloud.com/rave-revolution-beats" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card soundcloud"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-brands fa-soundcloud"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">SoundCloud</div>
+                  <div class="platform-description">Exclusive tracks, remixes, and DJ sets</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://www.beatport.com/es/artist/rave-revolution-beats/1305790" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card beatport"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-solid fa-music"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">Beatport</div>
+                  <div class="platform-description">Premium electronic music for DJs</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://tidal.com/artist/56583093" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card tidal"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-solid fa-wave-square"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">Tidal</div>
+                  <div class="platform-description">Lossless audio quality streaming</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+              
+              <a href="https://www.deezer.com/es/artist/317486241" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="platform-card deezer"
+                 itemprop="sameAs">
+                <div class="platform-icon">
+                  <i class="fa-solid fa-compact-disc"></i>
+                </div>
+                <div class="platform-info">
+                  <div class="platform-name">Deezer</div>
+                  <div class="platform-description">Discover our music with smart recommendations</div>
+                </div>
+                <i class="fa-solid fa-external-link external-icon"></i>
+              </a>
+            </div>
+          </section>
+            <!-- Featured Content Section -->
+          <section class="featured-section" aria-label="Featured Content">
+            <h2 class="section-title">Explore Our Universe</h2>
+            
+            <div class="content-grid">
+              <article class="content-card">
+                <div class="content-icon">
+                  <i class="fa-solid fa-compact-disc"></i>
+                </div>
+                <h3>Latest Releases</h3>
+                <p>Stream our newest tracks including "Nostalgia Pulse", "Vortex", "Ethereal Rise" and more progressive house, trance, and techno hits.</p>                <a href="https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1" target="_blank" rel="noopener" class="cta-link">
+                  Listen Now <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </article>
+              
+              <article class="content-card">
+                <div class="content-icon">
+                  <i class="fa-solid fa-radio"></i>
+                </div>
+                <h3>RRB Radio</h3>
+                <p>Tune into "Rave Revolution Beats Radio" - our signature playlist featuring the best underground electronic music and weekly drops.</p>
+                <a href="https://open.spotify.com/playlist/37i9dQZF1E4zrTS9FmFPsn" target="_blank" rel="noopener" class="cta-link">
+                  Listen to Radio <i class="fa-solid fa-arrow-right"></i>
+                </a>
+              </article>
+            </div>
+          </section>
+            <!-- Spotify Integration Section -->
+          <section class="spotify-player-section" aria-label="Listen on Spotify">
+            <h2 class="section-title">Listen Now on Spotify</h2>
+            <p class="section-description">
+              Stream our full tracks directly from Spotify. High-quality audio, instant playback.
+            </p>
+            
+            <div class="spotify-embeds-container">              <!-- Artist Profile Embed - Updates Automatically with Latest Releases -->
+              <div class="spotify-embed-wrapper artist-profile">
+                <h3 class="embed-title">
+                  <i class="fa-brands fa-spotify"></i>
+                  Artist Profile - Auto-Updates Weekly
+                </h3>
+                <p class="embed-description">
+                  Follow our artist profile for automatic updates with our latest releases, popular tracks, and curated content.
+                </p>
+                <iframe 
+                  style="border-radius:12px" 
+                  src="https://open.spotify.com/embed/artist/2Fu7NLytib1zNObXU0YUC1?utm_source=generator&theme=0" 
+                  width="100%" 
+                  height="400" 
+                  frameborder="0" 
+                  allowfullscreen="" 
+                  allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" 
+                  loading="lazy">
+                </iframe>
+              </div>
+            </div>
+            
+            <div class="spotify-cta">
+              <p>
+                <i class="fa-brands fa-spotify"></i>
+                Experience high-quality streaming with Spotify Premium for uninterrupted playback
+              </p>
+              <a href="https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1" 
+                 target="_blank" 
+                 rel="noopener noreferrer" 
+                 class="spotify-follow-btn">
+                <i class="fa-brands fa-spotify"></i>
+                Follow on Spotify
+              </a>
+            </div>
+          </section>
+          
+          <!-- Track Showcase Section -->
+          <section class="tracks-section" aria-label="Featured Tracks">
+            <h2 class="section-title">Featured Tracks</h2>
+            <p class="section-description">
+              Our standout releases that define the Rave Revolution Beats sound
+            </p>
+            
+            <div class="tracks-grid">
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Nostalgia Pulse</h3>
+                  <p class="track-description">Latest Release • Progressive House</p>
+                </div>
+                <a href="https://open.spotify.com/album/65ux1S1YNsEagBLaF4RVkU" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+              
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Vortex</h3>
+                  <p class="track-description">High-energy progressive journey</p>
+                </div>
+                <a href="https://open.spotify.com/album/493kRFMJNE2fQE6yYGEPQR" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+              
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Ethereal Rise</h3>
+                  <p class="track-description">Euphoric trance masterpiece</p>
+                </div>
+                <a href="https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+              
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Alive in the Light</h3>
+                  <p class="track-description">Cinematic electronic odyssey</p>
+                </div>
+                <a href="https://open.spotify.com/album/3voYWo4zgotcSoowkGptgQ" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+              
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Basstime</h3>
+                  <p class="track-description">Dark warehouse techno vibes</p>
+                </div>
+                <a href="https://open.spotify.com/album/4BUR7MOgwqQ3VM6KrFB6aW" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+              
+              <div class="track-card">
+                <div class="track-info">
+                  <h3 class="track-title">Break Through Tonight</h3>
+                  <p class="track-description">Peak-time dancefloor anthem</p>
+                </div>
+                <a href="https://open.spotify.com/album/3dCKQWavAIpeKfzqwri95n" target="_blank" rel="noopener" class="play-button">
+                  <i class="fa-solid fa-play"></i>
+                </a>
+              </div>
+            </div>
+          </section>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
+  </main>
 </Layout>
