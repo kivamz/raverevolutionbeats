@@ -40,14 +40,25 @@ const {
     <meta property="twitter:title" content={title} />
     <meta property="twitter:description" content={description} />
     <meta property="twitter:image" content={ogImage} />
-    
-    <!-- Favicon -->
+      <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
+    
+    <!-- PWA Manifest -->
+    <link rel="manifest" href="/raverevolutionbeats/manifest.json" />
     
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow" />
     <meta name="author" content="Rave Revolution Beats" />
     <meta name="theme-color" content="#a855f7" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta name="apple-mobile-web-app-title" content="RRB" />
+    
+    <!-- Preconnect to external domains for performance -->
+    <link rel="preconnect" href="https://open.spotify.com" />
+    <link rel="preconnect" href="https://kit.fontawesome.com" />
+    <link rel="dns-prefetch" href="https://music.apple.com" />
+    <link rel="dns-prefetch" href="https://youtube.com" />
     
     <!-- CDN de Font Awesome -->
     <script src="https://kit.fontawesome.com/5e60daf075.js" crossorigin="anonymous"></script>

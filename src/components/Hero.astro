@@ -5,56 +5,76 @@ import '../styles/hero.scss';
 // Force the correct base URL for production
 const baseUrl = '/raverevolutionbeats/';
 ---
-<section class="hero">
-  <div class="hero-background">
+<section class="hero" itemscope itemtype="https://schema.org/MusicGroup">
+  <div class="hero-background" aria-hidden="true">
     <div class="bg-gradient"></div>
     <div class="bg-particles"></div>
   </div>
   
   <div class="container">
     <div class="hero-content">
-      <div class="hero-main">
-        <h1 class="hero-title">
+      <header class="hero-main" role="banner">
+        <h1 class="hero-title" itemprop="name">
           <span class="title-line">Feel the</span>
           <span class="title-highlight">Beat</span>
         </h1>
-        <p class="hero-description">
+        <p class="hero-description" itemprop="description">
           Immerse yourself in the underground world of electronic music. 
           Experience earth-shaking bass, hypnotic melodies, and pure euphoria 
           through progressive house, techno, and trance.
-        </p>        <div class="hero-actions">
-          <a href={`${baseUrl}music/`} class="btn btn-primary">
+        </p>
+        
+        <div class="hero-actions" role="navigation" aria-label="Main actions">
+          <a href={`${baseUrl}music/`} 
+             class="btn btn-primary"
+             aria-label="Listen to our music on streaming platforms"
+             itemprop="url">
             <span>Listen Now</span>
-            <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="M8 5v14l11-7z" fill="currentColor"/>
             </svg>
-          </a>          <a href={`${baseUrl}store/`} class="btn btn-secondary">
+          </a>
+          
+          <a href={`${baseUrl}store/`} 
+             class="btn btn-secondary"
+             aria-label="Browse our merchandise store">
             <span>Explore Store</span>
           </a>
         </div>
-      </div>
-      
-      <div class="hero-subscribe">
+      </header>      
+      <aside class="hero-subscribe" itemscope itemtype="https://schema.org/NewsletterSubscription">
         <div class="subscribe-card">
-          <h2>Join the Revolution</h2>
-          <p>Get exclusive tracks, early access to events, and insider content.</p>
-          <form class="subscribe-form" id="subscribeForm">
+          <h2 itemprop="name">Join the Revolution</h2>
+          <p itemprop="description">Get exclusive tracks, early access to events, and insider content.</p>
+          <form class="subscribe-form" 
+                id="subscribeForm" 
+                itemscope 
+                itemtype="https://schema.org/EmailMessage"
+                role="form"
+                aria-label="Newsletter subscription form">
+            <label for="emailInput" class="sr-only">Email address for newsletter subscription</label>
             <input 
               type="email" 
               placeholder="Enter your email" 
               required 
               class="email-input"
               id="emailInput"
+              aria-describedby="subscribe-note"
+              itemprop="email"
+              autocomplete="email"
             >
-            <button type="submit" class="subscribe-btn">
+            <button type="submit" 
+                    class="subscribe-btn"
+                    aria-label="Subscribe to newsletter">
               <span>Subscribe</span>
-              <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"/>
               </svg>
             </button>
           </form>
-          <p class="subscribe-note">No spam, unsubscribe anytime</p>        </div>
-      </div>
+          <p class="subscribe-note" id="subscribe-note">No spam, unsubscribe anytime</p>
+        </div>
+      </aside>
     </div>
     
     <!-- Notification for subscription -->

@@ -1,7 +1,105 @@
 ---
 import Layout from '../components/Layout.astro';
 import Hero from '../components/Hero.astro';
+
+// SEO metadata optimizado para la homepage
+const pageTitle = "Rave Revolution Beats - Electronic Music Experience | Progressive House, Techno & Trance";
+const pageDescription = "Discover the future of electronic music with Rave Revolution Beats. Stream our latest progressive house, techno, and trance tracks on Spotify, Apple Music, and all major platforms. Join our community of music enthusiasts.";
+const pageKeywords = "Rave Revolution Beats, electronic music, progressive house, techno, trance, EDM, electronic dance music, DJ, music producer, streaming, Spotify, underground music, rave culture, electronic music community";
+const canonicalURL = "https://yourdomain.com/";
+
+// Structured data para la homepage
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "MusicGroup",
+  "name": "Rave Revolution Beats",
+  "alternateName": "RRB",
+  "description": pageDescription,
+  "url": canonicalURL,
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://yourdomain.com/logo.png",
+    "width": "400",
+    "height": "400"
+  },
+  "image": "https://yourdomain.com/og-image.jpg",
+  "foundingDate": "2025",
+  "genre": ["Electronic", "Progressive House", "Techno", "Trance", "EDM"],
+  "musicBy": {
+    "@type": "Person",
+    "name": "Rave Revolution Beats"
+  },
+  "sameAs": [
+    "https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1",
+    "https://music.apple.com/es/artist/rave-revolution-beats/1807818727",
+    "https://youtube.com/@raverevolutionbeats",
+    "https://www.soundcloud.com/rave-revolution-beats",
+    "https://www.beatport.com/es/artist/rave-revolution-beats/1305790",
+    "https://tidal.com/artist/56583093",
+    "https://www.deezer.com/es/artist/317486241",
+    "https://www.instagram.com/raverevolutionbeats",
+    "https://www.tiktok.com/@raverevolutionbeats",
+    "https://x.com/RaveRevolutionB",
+    "https://linktr.ee/raverevolutionbeats"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Music & Merchandise",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "MusicRecording",
+          "name": "Electronic Music Tracks"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Product",
+          "name": "Branded Merchandise"
+        }
+      }
+    ]
+  },
+  "location": {
+    "@type": "Place",
+    "name": "Global"
+  }
+};
+
+// WebSite structured data
+const websiteData = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "name": "Rave Revolution Beats",
+  "url": canonicalURL,
+  "description": pageDescription,
+  "inLanguage": "en-US",
+  "copyrightYear": "2025",
+  "copyrightHolder": {
+    "@type": "Organization",
+    "name": "Rave Revolution Beats"
+  },
+  "potentialAction": {
+    "@type": "SearchAction",
+    "target": {
+      "@type": "EntryPoint",
+      "urlTemplate": canonicalURL + "?q={search_term_string}"
+    },
+    "query-input": "required name=search_term_string"
+  }
+};
 ---
-<Layout>
+<Layout 
+  title={pageTitle} 
+  description={pageDescription} 
+  keywords={pageKeywords} 
+  canonicalURL={canonicalURL}
+>
+  <!-- Structured Data para SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  <script type="application/ld+json" set:html={JSON.stringify(websiteData)} />
+  
   <Hero />
 </Layout>
