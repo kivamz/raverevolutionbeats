@@ -15,7 +15,7 @@
 // Get cart from localStorage
 function getCart() {
   try {
-    const cart = localStorage.getItem('rave-cart');
+    const cart = localStorage.getItem('cart');
     return cart ? JSON.parse(cart) : [];
   } catch (error) {
     console.error('Error getting cart:', error);
@@ -26,7 +26,7 @@ function getCart() {
 // Save cart to localStorage
 function saveCart(cart) {
   try {
-    localStorage.setItem('rave-cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
     // Dispatch custom event for cart updates
     window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
   } catch (error) {
