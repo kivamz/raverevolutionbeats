@@ -42,7 +42,8 @@
     flex-direction: column;
     gap: 1rem;
   }
-    .cart-item {
+  
+  .cart-item {
     display: grid;
     grid-template-columns: 120px 1fr auto;
     gap: 1.5rem;
@@ -52,7 +53,6 @@
     border-radius: 16px;
     transition: all 0.3s ease;
     color: $white;
-    position: relative;
     
     @media (max-width: 768px) {
       grid-template-columns: 80px 1fr;
@@ -107,14 +107,13 @@
         font-size: 0.9rem;
       }
     }
-      .item-controls {
+    
+    .item-controls {
       display: flex;
       flex-direction: column;
       align-items: flex-end;
-      justify-content: space-between;
-      gap: 0.75rem;
-      min-width: 140px;
-      position: relative;
+      gap: 1rem;
+      min-width: 120px;
       
       @media (max-width: 768px) {
         grid-column: 1 / -1;
@@ -122,7 +121,6 @@
         justify-content: space-between;
         align-items: center;
         min-width: auto;
-        gap: 1rem;
       }
       
       .quantity-controls {
@@ -169,30 +167,23 @@
         color: #a855f7;
         font-weight: 700;
         font-size: 1.1rem;
-      }      .remove-btn {
-        width: 36px;
-        height: 36px;
+      }
+
+      .remove-btn {
+        width: 44px;
+        height: 44px;
         border: none;
         background: linear-gradient(135deg, rgba(255, 75, 75, 0.15), rgba(220, 38, 127, 0.15));
         color: $remove-button-color;
         border: 2px solid rgba(255, 75, 75, 0.2);
-        border-radius: 10px;
+        border-radius: 12px;
         cursor: pointer;
         display: flex;
         align-items: center;
         justify-content: center;
         transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-        position: absolute;
-        top: 12px;
-        right: 12px;
+        position: relative;
         overflow: hidden;
-        z-index: 2;
-        
-        @media (max-width: 768px) {
-          position: static;
-          width: 40px;
-          height: 40px;
-        }
         
         &::before {
           content: '';

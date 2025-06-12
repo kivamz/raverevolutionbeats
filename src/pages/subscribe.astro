@@ -1,6 +1,9 @@
 ---
 import Layout from '../components/Layout.astro';
 import '../styles/subscribe.scss';
+
+// Force the correct base URL for production  
+const baseUrl = '/raverevolutionbeats/';
 ---
 
 <Layout title="Subscribe - Rave Revolution Beats">
@@ -116,11 +119,10 @@ import '../styles/subscribe.scss';
                 <input type="email" placeholder="Email Address" required>
                 <input type="tel" placeholder="Phone (Optional)">
               </div>
-              
-              <div class="form-row">
+                <div class="form-row">
                 <label class="checkbox-label">
                   <input type="checkbox" required>
-                  <span>I agree to the <a href="/terms">Terms of Service</a> and <a href="/privacy">Privacy Policy</a></span>
+                  <span>I agree to the <a href={`${baseUrl}terms/`}>Terms of Service</a> and <a href={`${baseUrl}privacy/`}>Privacy Policy</a></span>
                 </label>
               </div>
               
@@ -164,7 +166,7 @@ import '../styles/subscribe.scss';
   </main>
 </Layout>
 
-<script>
+<script define:vars={{ baseUrl }}>
   document.addEventListener('DOMContentLoaded', function() {
     const tierButtons = document.querySelectorAll('.tier-btn');
     const detailedForm = document.getElementById('detailedSubscribeForm');
@@ -240,19 +242,18 @@ import '../styles/subscribe.scss';
         }
       }
     });
-    
-    // Handle modal close
+      // Handle modal close
     document.querySelector('.close-modal')?.addEventListener('click', function() {
       modal?.classList.remove('show');
       // Redirect to home or dashboard
-      window.location.href = '/';
+      window.location.href = baseUrl;
     });
     
     // Close modal on backdrop click
     modal?.addEventListener('click', function(e) {
       if (e.target === modal) {
         modal.classList.remove('show');
-        window.location.href = '/';
+        window.location.href = baseUrl;
       }
     });
       function showNotification(message: string, type: string = 'info') {
