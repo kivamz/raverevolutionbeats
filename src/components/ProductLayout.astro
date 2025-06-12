@@ -1,0 +1,10 @@
+---
+import Layout from './Layout.astro';
+import '../styles/product-detail.scss';
+
+const { ...props } = Astro.props;
+---
+
+<Layout {...props}>
+  <slot />
+</Layout>
