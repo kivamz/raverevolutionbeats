@@ -99,3 +99,19 @@ All commands are run from the root of the project, from a terminal:
 ## 👀 Want to learn more?
 
 Feel free to check [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+
+## 🐛 Errores de Producción Corregidos
+
+### ✅ Problemas Resueltos (Junio 2025)
+- **CSS 404 Errors**: Corrección de rutas de assets y imports
+- **Currency Code Null**: Validación robusta con fallbacks a EUR
+- **Manifest Icon Errors**: Configuración PWA optimizada
+- **Deprecated Meta Tags**: Actualización a estándares modernos
+
+### 🛡️ Robustez Implementada
+- **Validación de Currency**: Try-catch con fallbacks seguros
+- **API Fallbacks**: Productos de respaldo cuando API falla
+- **Error Handling**: Manejo graceful de errores de red
+- **Cross-browser**: Compatibilidad mejorada
+
+Ver [`PRODUCTION_FIXES_FINAL.md`](./PRODUCTION_FIXES_FINAL.md) para detalles completos.

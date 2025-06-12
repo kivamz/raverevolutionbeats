@@ -561,12 +561,25 @@ const baseUrl = '/raverevolutionbeats/';
       } catch (error) {
         console.error('Error saving cart:', error);
       }
-    }    function formatPrice(price, currency = "USD") {
-      const safeCurrency = currency && typeof currency === 'string' ? currency : "USD";
-      return new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: safeCurrency
-      }).format(parseFloat(price));
+    }    function formatPrice(price, currency = "EUR") {
+      // More robust currency validation
+      let safeCurrency = "EUR";
+      if (currency && typeof currency === 'string' && currency.trim().length === 3) {
+        safeCurrency = currency.trim().toUpperCase();
+      }
+      
+      try {
+        return new Intl.NumberFormat("es-ES", {
+          style: "currency",
+          currency: safeCurrency
+        }).format(parseFloat(price));
+      } catch (error) {
+        console.warn('Error formatting price with currency:', currency, 'Using EUR fallback');
+        return new Intl.NumberFormat("es-ES", {
+          style: "currency",
+          currency: "EUR"
+        }).format(parseFloat(price));
+      }
     }
 
     // Open cart sidebar

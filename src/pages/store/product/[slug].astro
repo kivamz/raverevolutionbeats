@@ -1,6 +1,7 @@
 ---
 import Layout from '../../../components/Layout.astro';
 import '../../../styles/product-detail.scss';
+import '../../../styles/global.scss';
 
 // Objeto fallback para el color.
 const colorMap = {
@@ -506,13 +507,25 @@ const productData = product || {};
           };
           updateThumbnailGallery();
         }
-      };const formatPrice = (price, currency = "EUR") => {
-        // Ensure currency is never null or undefined
-        const safeCurrency = currency && typeof currency === 'string' ? currency : "EUR";
-        return new Intl.NumberFormat("es-ES", {
-          style: "currency",
-          currency: safeCurrency
-        }).format(parseFloat(price));
+      };      const formatPrice = (price, currency = "EUR") => {
+        // More robust currency validation
+        let safeCurrency = "EUR";
+        if (currency && typeof currency === 'string' && currency.trim().length === 3) {
+          safeCurrency = currency.trim().toUpperCase();
+        }
+        
+        try {
+          return new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency: safeCurrency
+          }).format(parseFloat(price));
+        } catch (error) {
+          console.warn('Error formatting price with currency:', currency, 'Using EUR fallback');
+          return new Intl.NumberFormat("es-ES", {
+            style: "currency",
+            currency: "EUR"
+          }).format(parseFloat(price));
+        }
       };
 
       // Función para actualizar la UI
