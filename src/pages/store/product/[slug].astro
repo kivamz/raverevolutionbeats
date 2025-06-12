@@ -90,13 +90,30 @@ if (!slug || typeof slug !== 'string') {
 const productId = (slug as string).split('-')[0];
 
 const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
-if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN)
-  throw new Error(".env incompleto");
+if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) {
+  console.warn(".env variables missing - using fallback data");
+  // Don't throw error, just log warning
+}
 
 const formatEuro = (value: any, currency = "EUR") => {
-  // Ensure currency is never null or undefined
-  const safeCurrency = currency && typeof currency === 'string' ? currency : "EUR";
-  return new Intl.NumberFormat("es-ES", { style: "currency", currency: safeCurrency }).format(value);
+  // More robust currency validation
+  let safeCurrency = "EUR";
+  if (currency && typeof currency === 'string' && currency.trim().length === 3) {
+    safeCurrency = currency.trim().toUpperCase();
+  }
+  
+  try {
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: safeCurrency
+    }).format(parseFloat(value));
+  } catch (error) {
+    console.warn('Error formatting price with currency:', currency, 'Using EUR fallback');
+    return new Intl.NumberFormat("es-ES", {
+      style: "currency",
+      currency: "EUR"
+    }).format(parseFloat(value));
+  }
 };
 
 // Función para obtener variante enriquecida (GET /products/variant/{id}).
@@ -121,25 +138,27 @@ async function getVariantComplete(id: any) {
 
 let product = null;
 try {
-  const res = await fetch(`${PRINTFUL_API_BASE}store/products/${productId}`, {
-    headers: {
-      "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
-      "Content-Type": "application/json"
-    }
-  });
-  const data = await res.json();
-  product = data.result?.sync_product || null;
-  if (product) {
-    const basicVariants = data.result.sync_variants || [];
-    product.sync_variants = basicVariants; // Guardamos fallback.
-    
-    // En lugar de reemplazar completamente las variantes, vamos a enriquecerlas
-    // manteniendo las URLs de imagen de las sync_variants originales
-    product.variants = await Promise.all(
-      basicVariants.map(async (variant: any) => {
-        const idToUse = variant.variant_id ? variant.variant_id : variant.id;
-        const fullVariant = await getVariantComplete(idToUse);
-          // Combinamos la información completa con las URLs originales
+  // Only try to fetch if we have API credentials
+  if (PRINTFUL_API_BASE && PRINTFUL_ACCESS_TOKEN) {
+    const res = await fetch(`${PRINTFUL_API_BASE}store/products/${productId}`, {
+      headers: {
+        "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
+        "Content-Type": "application/json"
+      }
+    });
+    const data = await res.json();
+    product = data.result?.sync_product || null;
+    if (product) {
+      const basicVariants = data.result.sync_variants || [];
+      product.sync_variants = basicVariants; // Guardamos fallback.
+      
+      // En lugar de reemplazar completamente las variantes, vamos a enriquecerlas
+      // manteniendo las URLs de imagen de las sync_variants originales
+      product.variants = await Promise.all(
+        basicVariants.map(async (variant: any) => {
+          const idToUse = variant.variant_id ? variant.variant_id : variant.id;
+          const fullVariant = await getVariantComplete(idToUse);
+            // Combinamos la información completa con las URLs originales
         const combinedVariant = fullVariant
           ? { 
               ...fullVariant, 
@@ -156,13 +175,35 @@ try {
         return combinedVariant;
       })
     );
-    
-    if (!product.variants.length && basicVariants.length) {
+      if (!product.variants.length && basicVariants.length) {
       product.variants = basicVariants;
     }
+    }
+  } else {
+    // Fallback when no API credentials
+    console.warn("No API credentials available, using fallback product data");
+    product = {
+      id: parseInt(productId),
+      name: "Product",
+      description: "Product description not available",
+      thumbnail_url: "https://via.placeholder.com/400x400/000000/ffffff?text=Product",
+      variants: [],
+      sync_variants: []
+    };
   }
 } catch (error) {
   console.error("Error obteniendo producto:", error);
+  // Fallback product data in case of error
+  if (!product) {
+    product = {
+      id: parseInt(productId),
+      name: "Product",
+      description: "Product description not available", 
+      thumbnail_url: "https://via.placeholder.com/400x400/000000/ffffff?text=Product",
+      variants: [],
+      sync_variants: []
+    };
+  }
 }
 
 let uniqueColorVariants: any[] = [];
