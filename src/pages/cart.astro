@@ -1,6 +1,8 @@
 ---
 import Layout from '../components/Layout.astro';
 import '../styles/cart.scss';
+
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <Layout>
@@ -20,7 +22,7 @@ import '../styles/cart.scss';
             </svg>
             <h2>Your cart is empty</h2>
             <p>Add some products to get started!</p>
-            <a href="/store" class="shop-now-btn">Shop Now</a>
+            <a href={`${baseUrl}store/`} class="shop-now-btn">Shop Now</a>
           </div>
         </div>
         

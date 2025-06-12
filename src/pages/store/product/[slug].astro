@@ -1,4 +1,4 @@
----
+git stsatus---
 import Layout from '../../../components/Layout.astro';
 import "../../../styles/product-detail.scss";
 
@@ -670,15 +670,21 @@ const productData = product || {};
         }        localStorage.setItem("cart", JSON.stringify(cart));
 
         // Dispatch custom event for cart updates
-        window.dispatchEvent(new CustomEvent("cartUpdated"));
-
-        // Mostrar mensaje de confirmación
+        window.dispatchEvent(new CustomEvent("cartUpdated"));        // Mostrar mensaje de confirmación
         const cartMessageEl = document.getElementById("cart-message");
         if (cartMessageEl) {
-          cartMessageEl.style.display = "block";
+          cartMessageEl.classList.add("show");
+          cartMessageEl.style.display = "flex";
+          cartMessageEl.style.animation = "slideInFromRight 0.3s ease-out";
+          
           setTimeout(() => {
-            cartMessageEl.style.display = "none";
-          }, 3000);
+            cartMessageEl.style.animation = "slideOutToRight 0.3s ease-in";
+            setTimeout(() => {
+              cartMessageEl.classList.remove("show");
+              cartMessageEl.style.display = "none";
+              cartMessageEl.style.animation = "";
+            }, 300);
+          }, 2700);
         }
       };      // Event listeners para colores
       document.querySelectorAll(".color-swatch").forEach(swatch => {

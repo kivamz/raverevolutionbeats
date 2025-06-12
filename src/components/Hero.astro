@@ -1,6 +1,8 @@
 ---
 import '../styles/global.scss';
 import '../styles/hero.scss';
+
+const baseUrl = import.meta.env.BASE_URL;
 ---
 <section class="hero">
   <div class="hero-background">
@@ -20,12 +22,12 @@ import '../styles/hero.scss';
           Experience earth-shaking bass, hypnotic melodies, and pure euphoria 
           through progressive house, techno, and trance.
         </p>        <div class="hero-actions">
-          <a href="music" class="btn btn-primary">
+          <a href={`${baseUrl}music/`} class="btn btn-primary">
             <span>Listen Now</span>
             <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
               <path d="M8 5v14l11-7z" fill="currentColor"/>
             </svg>
-          </a>          <a href="store" class="btn btn-secondary">
+          </a>          <a href={`${baseUrl}store/`} class="btn btn-secondary">
             <span>Explore Store</span>
           </a>
         </div>

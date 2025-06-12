@@ -2,6 +2,8 @@
 import Layout from '../components/Layout.astro';
 import "../styles/store.scss";
 
+const baseUrl = import.meta.env.BASE_URL;
+
 // Interfaces para tipar productos y sus variantes.
 // Ajusta los campos según la respuesta real de la API de Printful.
 interface Product {
@@ -97,10 +99,9 @@ const slugify = (str: string): string =>
     <div class="container">
       <h1>Our Store</h1>
       <p>Discover our exclusive collection of products.</p>      <div class="products">
-        {detailedProducts.map((product: ProductDetail) => (        <div class="product-card">
-            <a 
+        {detailedProducts.map((product: ProductDetail) => (        <div class="product-card">            <a 
               class="product-link" 
-              href={`store/product/${product.id}-${slugify(product.name)}`} 
+              href={`${baseUrl}store/product/${product.id}-${slugify(product.name)}`} 
               data-key={product.id}
             >
               <div class="product">

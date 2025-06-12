@@ -15,7 +15,7 @@
 // Get cart from localStorage
 function getCart() {
   try {
-    const cart = localStorage.getItem('rave-cart');
+    const cart = localStorage.getItem('cart');
     return cart ? JSON.parse(cart) : [];
   } catch (error) {
     console.error('Error getting cart:', error);
@@ -26,7 +26,7 @@ function getCart() {
 // Save cart to localStorage
 function saveCart(cart) {
   try {
-    localStorage.setItem('rave-cart', JSON.stringify(cart));
+    localStorage.setItem('cart', JSON.stringify(cart));
     // Dispatch custom event for cart updates
     window.dispatchEvent(new CustomEvent('cartUpdated', { detail: cart }));
   } catch (error) {
@@ -78,14 +78,18 @@ function clearCart() {
 function updateCartCount() {
   const cart = getCart();
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const cartCountElement = document.querySelector('.cart-count');
+  const cartCountElement = document.querySelector('.cart-count') || document.getElementById('cart-count');
+  
+  console.log(`Updating cart count: ${totalItems} items`);
   
   if (cartCountElement) {
     cartCountElement.textContent = totalItems.toString();
     
     if (totalItems > 0) {
+      cartCountElement.style.display = 'flex';
       cartCountElement.classList.add('show');
     } else {
+      cartCountElement.style.display = 'none';
       cartCountElement.classList.remove('show');
     }
     
@@ -94,6 +98,10 @@ function updateCartCount() {
     setTimeout(() => {
       cartCountElement.classList.remove('animate');
     }, 600);
+    
+    console.log(`Cart count updated to: ${totalItems}`);
+  } else {
+    console.warn('Cart count element not found');
   }
 }
 
@@ -159,11 +167,24 @@ function showCartNotification(message) {
 
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', function() {
+  console.log('Cart manager initialized');
   updateCartCount();
   
   // Listen for cart updates
   window.addEventListener('cartUpdated', function(event) {
+    console.log('Cart updated event received:', event.detail);
     updateCartCount();
+  });
+  
+  // Debug: log available functions
+  console.log('Available cart functions:', {
+    getCart: typeof getCart,
+    saveCart: typeof saveCart,
+    addToCart: typeof addToCart,
+    removeFromCart: typeof removeFromCart,
+    updateCartCount: typeof updateCartCount,
+    showCartNotification: typeof showCartNotification,
+    toggleCart: typeof toggleCart
   });
 });
 

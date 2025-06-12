@@ -1,5 +1,7 @@
 ---
 import '../styles/cart.scss';
+
+const baseUrl = import.meta.env.BASE_URL;
 ---
 
 <div id="mini-cart" class="mini-cart">
@@ -14,19 +16,17 @@ import '../styles/cart.scss';
     <div id="cart-items" class="cart-items">
       <!-- Cart items will be loaded dynamically -->
     </div>
-    
-    <div class="cart-empty" id="cart-empty" style="display: none;">
+      <div class="cart-empty" id="cart-empty" style="display: none;">
       <p>Your cart is empty</p>
-      <a href="store" class="btn">Continue Shopping</a>
+      <a href={`${baseUrl}store/`} class="btn">Continue Shopping</a>
     </div>
   </div>
   
   <div class="cart-footer" id="cart-footer" style="display: none;">
     <div class="cart-subtotal">
       <span>Subtotal: <strong id="cart-subtotal">€0.00</strong></span>
-    </div>
-    <div class="cart-actions">
-      <a href="cart" class="btn btn-secondary">View Cart</a>
+    </div>    <div class="cart-actions">
+      <a href={`${baseUrl}cart/`} class="btn btn-secondary">View Cart</a>
       <button class="btn btn-primary" id="checkout-btn">Checkout</button>
     </div>
   </div>
