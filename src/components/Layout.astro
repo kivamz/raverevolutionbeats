@@ -4,12 +4,51 @@ import Footer from './Footer.astro';
 import CartSidebar from './CartSidebar.astro';
 import '../styles/global.scss';
 import faviconSvg from '../assets/favicon.svg';
+
+// SEO props with defaults
+const {
+  title = "Rave Revolution Beats - Electronic Music Experience",
+  description = "Experience the future of electronic music with Rave Revolution Beats. Discover exclusive tracks, immersive events, and join our global community of music enthusiasts.",
+  keywords = "electronic music, rave, beats, techno, house, trance, DJ, music production, electronic dance music, EDM",
+  canonicalURL = "https://yourdomain.com/",
+  ogImage = "https://yourdomain.com/og-image.jpg",
+  twitterCard = "summary_large_image"
+} = Astro.props;
 ---
 <!DOCTYPE html>
-<html lang="en">  <head>
+<html lang="en">
+  <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />    <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
-    <title>Rave Revolution Beats</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    
+    <!-- SEO Meta Tags -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="keywords" content={keywords} />
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content={twitterCard} />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={title} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={ogImage} />
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
+    
+    <!-- Additional SEO -->
+    <meta name="robots" content="index, follow" />
+    <meta name="author" content="Rave Revolution Beats" />
+    <meta name="theme-color" content="#a855f7" />
+    
     <!-- CDN de Font Awesome -->
     <script src="https://kit.fontawesome.com/5e60daf075.js" crossorigin="anonymous"></script>
     <!-- Cart Manager Script -->

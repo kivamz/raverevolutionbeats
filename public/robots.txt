@@ -1,0 +1,18 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://yourdomain.com/sitemap.xml
+
+# Disallow certain paths (adjust as needed)
+Disallow: /admin/
+Disallow: /private/
+Disallow: /*.json$
+Disallow: /api/
+
+# Allow important content
+Allow: /store/
+Allow: /music/
+Allow: /about/
+Allow: /contact/
+Allow: /subscribe/

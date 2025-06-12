@@ -1,19 +1,169 @@
 ---
 import Layout from '../components/Layout.astro';
 import "../styles/about.scss";
+
+// SEO metadata
+const pageTitle = "About Rave Revolution Beats - Electronic Music Pioneers";
+const pageDescription = "Discover the story behind Rave Revolution Beats. Starting in 2025, we're pioneering fresh electronic music experiences with innovative beats and immersive community engagement.";
+const pageKeywords = "electronic music, rave, beats, music production, DJ, techno, house, trance, music community, new artist, 2025";
+const canonicalURL = "https://yourdomain.com/about/";
+
+// Structured data for SEO
+const structuredData = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  "name": "Rave Revolution Beats",
+  "alternateName": "RRB",
+  "description": pageDescription,
+  "url": canonicalURL,
+  "logo": {
+    "@type": "ImageObject",
+    "url": "https://yourdomain.com/logo.png",
+    "width": "400",
+    "height": "400"
+  },
+  "foundingDate": "2025-01-01",
+  "industry": "Music Production and Entertainment",
+  "address": {
+    "@type": "PostalAddress",
+    "addressCountry": "US"
+  },
+  "contactPoint": {
+    "@type": "ContactPoint",
+    "contactType": "customer service",
+    "availableLanguage": ["English", "Spanish"]
+  },
+  "sameAs": [
+    "https://www.youtube.com/@RaveRevolutionBeats",
+    "https://www.instagram.com/raverevolutionbeats",
+    "https://www.tiktok.com/@raverevolutionbeats",
+    "https://x.com/RaveRevolutionB",
+    "https://www.threads.com/@raverevolutionbeats",
+    "https://linktr.ee/raverevolutionbeats"
+  ],
+  "knowsAbout": [
+    "Electronic Music Production",
+    "Live DJ Performances",
+    "Music Event Organization",
+    "Digital Music Distribution",
+    "Artist Collaboration"
+  ],
+  "hasOfferCatalog": {
+    "@type": "OfferCatalog",
+    "name": "Music and Merchandise",
+    "itemListElement": [
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Product",
+          "name": "Electronic Music Tracks"
+        }
+      },
+      {
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Product",
+          "name": "Branded Merchandise"
+        }
+      }
+    ]
+  }
+};
 ---
-<Layout>
-  <section class="about">
-    <div class="container">
-      <h1>About Us</h1>
-      <p>
-        Rave Revolution Beats was born from our passion for electronic music and our desire to innovate in live events. Our mission is to create unforgettable experiences through dynamic beats, immersive visuals, and a community that celebrates musical diversity.
-      </p>
-      <p>
-        Since our inception in 2020, we have continuously pushed creative boundaries and collaborated with top artists to deliver electrifying performances.
-      </p>
-      <!-- Imagen de placeholder con temática oscura -->
-      <!-- <img src="https://placehold.co/800x400/121212/ffffff?text=Team+Photo" alt="Our Team" /> -->
-    </div>
-  </section>
+<Layout title={pageTitle} description={pageDescription} keywords={pageKeywords} canonicalURL={canonicalURL}>  <!-- Structured Data for SEO -->
+  <script type="application/ld+json" set:html={JSON.stringify(structuredData)} />
+  
+  <!-- Breadcrumb structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {
+        "@type": "ListItem",
+        "position": 1,
+        "name": "Home",
+        "item": "https://yourdomain.com/"
+      },
+      {
+        "@type": "ListItem",
+        "position": 2,
+        "name": "About",
+        "item": "https://yourdomain.com/about/"
+      }
+    ]
+  }
+  </script>
+    <main>
+    <!-- Breadcrumb Navigation -->
+    <nav class="breadcrumb" aria-label="Breadcrumb">
+      <ol>
+        <li><a href="/">Home</a></li>
+        <li aria-current="page">About</li>
+      </ol>
+    </nav>
+    
+    <article itemscope itemtype="https://schema.org/AboutPage">
+      <section class="about">
+        <div class="container">          <header class="about-header">
+            <h1 itemprop="headline">About Rave Revolution Beats</h1>
+            <p class="subtitle" itemprop="description">A fresh vision for electronic music experiences, born in 2025</p>
+          </header>
+          
+          <div class="about-content" itemprop="mainContentOfPage">
+            <section class="story-section" itemscope itemtype="https://schema.org/Organization">
+              <div class="story-text">
+                <p class="story-paragraph highlight" itemprop="description">
+                  Rave Revolution Beats emerged from our passion for electronic music and our vision to create something truly innovative. Starting fresh in <time datetime="2025" itemprop="foundingDate">2025</time>, we're building immersive experiences through dynamic beats, cutting-edge visuals, and a community that celebrates musical diversity.
+                </p>
+                <p class="story-paragraph">
+                  As a new force in the electronic music scene, we're not bound by conventional approaches. Every track, every event, and every collaboration is an opportunity to push boundaries and explore new sonic territories. We believe electronic music is more than sound—it's a transformative experience that connects people across cultures and backgrounds.
+                </p>
+                <p class="story-paragraph">
+                  Our journey is just beginning, but our vision is clear: to become a leading voice in the evolution of electronic music. We're building something special from the ground up, bringing together innovative artists, cutting-edge technology, and an ever-growing community of music enthusiasts who share our passion for the future of sound.
+                </p>
+              </div>
+            </section>
+            
+            <section class="stats-section" aria-label="Our Journey So Far">
+              <h2 class="sr-only">Our Current Focus Areas</h2>
+              <div class="stats-grid">
+                <div class="stat-item" itemscope itemtype="https://schema.org/QuantitativeValue">
+                  <div class="stat-number" itemprop="value">2025</div>
+                  <div class="stat-label" itemprop="unitText">Founded</div>
+                </div>
+                <div class="stat-item" itemscope itemtype="https://schema.org/QuantitativeValue">
+                  <div class="stat-number" itemprop="value">∞</div>
+                  <div class="stat-label" itemprop="unitText">Possibilities</div>
+                </div>
+                <div class="stat-item" itemscope itemtype="https://schema.org/QuantitativeValue">
+                  <div class="stat-number" itemprop="value">100%</div>
+                  <div class="stat-label" itemprop="unitText">Passion</div>
+                </div>
+                <div class="stat-item" itemscope itemtype="https://schema.org/QuantitativeValue">
+                  <div class="stat-number" itemprop="value">24/7</div>
+                  <div class="stat-label" itemprop="unitText">Innovation</div>
+                </div>
+              </div>
+            </section>
+              <section class="mission-section" itemscope itemtype="https://schema.org/Mission">
+              <h2 class="mission-title" itemprop="name">Our Vision</h2>
+              <p class="mission-text" itemprop="description">
+                To revolutionize the electronic music landscape through fresh perspectives and innovative approaches. As a new voice in the scene, we aim to bridge creative boundaries, explore uncharted sonic territories, and build a community that celebrates both the underground spirit and the limitless possibilities of electronic music in the modern era.
+              </p>
+            </section>
+          </div>
+          
+          <!-- Future team image placeholder with proper alt text for SEO -->
+          <!-- <section class="team-image">
+            <img src="https://placehold.co/800x400/121212/ffffff?text=Team+Photo" 
+                 alt="Rave Revolution Beats team members collaborating in our modern music production studio" 
+                 width="800" 
+                 height="400"
+                 loading="lazy" />
+          </section> -->
+        </div>
+      </section>
+    </article>
+  </main>
 </Layout>
