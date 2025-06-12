@@ -1,16 +1,14 @@
 import { defineConfig } from 'astro/config';
 
 export default defineConfig({
-  site: process.env.NODE_ENV === 'production'
-    ? 'https://github.com/kivamz/raverevolutionbeats/'
-    : 'http://localhost:4321',
-  base: process.env.NODE_ENV === 'production' ? '/raverevolutionbeats/' : '/',
+  site: 'https://kivamz.github.io',
+  base: '/raverevolutionbeats',
+  build: {
+    assets: 'assets'
+  },
   vite: {
     define: {
-      // Solo se expone al cliente información no sensible
-      'import.meta.env.SITE': JSON.stringify(process.env.NODE_ENV === 'production'
-        ? 'https://github.com/kivamz/raverevolutionbeats/'
-        : 'http://localhost:4321')
+      'import.meta.env.SITE': JSON.stringify('https://kivamz.github.io/raverevolutionbeats')
     }
   }
 });

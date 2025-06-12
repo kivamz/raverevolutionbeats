@@ -40,15 +40,14 @@ try {
       'Authorization': `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
       'Content-Type': 'application/json'
     }
-  });
-  if (!response.ok) {
-    console.error("Printful API response error:", response.statusText);
+  });  if (!response.ok) {
+    // Error en respuesta de la API
   } else {
     const productsData = await response.json();
     products = productsData.result || [];
   }
 } catch (error) {
-  console.error('Error fetching products:', error);
+  // Error obteniendo productos
 }
 
 let detailedProducts: ProductDetail[] = [];
@@ -64,21 +63,16 @@ if (products.length > 0) {
           }
         });
         if (resDetail.ok) {
-          const detailData = await resDetail.json();
-          console.log(`Detail for product ${prod.id}:`, detailData);
-          if (detailData && detailData.result && (detailData.result.variants || detailData.result.sync_variants)) {
+          const detailData = await resDetail.json();          if (detailData && detailData.result && (detailData.result.variants || detailData.result.sync_variants)) {
             const variants = detailData.result.variants || detailData.result.sync_variants;
             return { ...prod, variants } as ProductDetail;
           } else {
-            console.error(`No variants found for product ${prod.id}`, detailData);
             return { ...prod, variants: [] } as ProductDetail;
           }
         } else {
-          console.error("Error fetching product detail for", prod.id, resDetail.statusText);
           return { ...prod, variants: [] } as ProductDetail;
         }
       } catch (error) {
-        console.error("Error fetching product detail for", prod.id, error);
         return { ...prod, variants: [] } as ProductDetail;
       }
     })
@@ -102,51 +96,320 @@ const slugify = (str: string): string =>
   <section class="store">
     <div class="container">
       <h1>Our Store</h1>
-      <p>Discover our exclusive collection of products.</p>
-      <div class="products">
+      <p>Discover our exclusive collection of products.</p>      <div class="products">
         {detailedProducts.map((product: ProductDetail) => (
-          <a 
-            class="product-link" 
-            href={`store/product/${product.id}-${slugify(product.name)}`} 
-            data-key={product.id}
-          >
-            <div class="product">
-              {product.thumbnail_url && (
-                <img src={product.thumbnail_url} alt={product.name} />
-              )}
-              <div class="product-content">
-                <h2>{product.name}</h2>
-                {product.description && <p>{product.description}</p>}
-                {product.variants && product.variants.length > 0 && (
-                  (() => {
-                    // Extraemos los precios de las variantes.
-                    const prices = product.variants
-                      .map(v => {
-                        // Primero intentamos con "retail_price"; si no es válido, usamos "price".
-                        let p = parseFloat(v.retail_price || '');
-                        if (isNaN(p)) {
-                          p = parseFloat(v.price || '');
-                        }
-                        return p;
-                      })
-                      .filter(p => !isNaN(p));
-
-                    if (prices.length === 0) return <p class="price">Price not available</p>;
-
-                    const min = Math.min(...prices);
-                    const max = Math.max(...prices);
-                    if (min === max) {
-                      return <p class="price">{formatEuro(min)}</p>;
-                    } else {
-                      return <p class="price">From {formatEuro(min)} to {formatEuro(max)}</p>;
-                    }
-                  })()
+          <div class="product-card">
+            <a 
+              class="product-link" 
+              href={`store/product/${product.id}-${slugify(product.name)}`} 
+              data-key={product.id}
+            >
+              <div class="product">
+                {product.thumbnail_url && (
+                  <img src={product.thumbnail_url} alt={product.name} />
                 )}
+                <div class="product-content">
+                  <h2>{product.name}</h2>
+                  {product.description && <p>{product.description}</p>}
+                  {product.variants && product.variants.length > 0 && (
+                    (() => {
+                      // Extraemos los precios de las variantes.
+                      const prices = product.variants
+                        .map(v => {
+                          // Primero intentamos con "retail_price"; si no es válido, usamos "price".
+                          let p = parseFloat(v.retail_price || '');
+                          if (isNaN(p)) {
+                            p = parseFloat(v.price || '');
+                          }
+                          return p;
+                        })
+                        .filter(p => !isNaN(p));
+
+                      if (prices.length === 0) return <p class="price">Price not available</p>;
+
+                      const min = Math.min(...prices);
+                      const max = Math.max(...prices);
+                      if (min === max) {
+                        return <p class="price">{formatEuro(min)}</p>;
+                      } else {
+                        return <p class="price">From {formatEuro(min)} to {formatEuro(max)}</p>;
+                      }
+                    })()
+                  )}
+                </div>
               </div>
-            </div>
-          </a>
+            </a>
+            <button 
+              class="add-to-cart-btn" 
+              data-product-id={product.id}
+              data-product-name={product.name}
+              data-product-image={product.thumbnail_url}
+              data-product-price={product.variants && product.variants.length > 0 ? 
+                Math.min(...product.variants
+                  .map(v => parseFloat(v.retail_price || v.price || '0'))
+                  .filter(p => !isNaN(p))
+                ) : 0
+              }
+              data-variants={JSON.stringify(product.variants || [])}
+            >
+              <svg viewBox="0 0 24 24" fill="none">
+                <path d="M3 3h2l.4 2M7 13h10l4-8H5.4m1.6 8L6 5H5M7 13v4a2 2 0 0 0 2 2h9a2 2 0 0 0 2-2v-4M9 19a1 1 0 1 0 2 0 1 1 0 0 0-2 0zM20 19a1 1 0 1 0 2 0 1 1 0 0 0-2 0z" stroke="currentColor" stroke-width="2"/>
+              </svg>
+              Add to Cart
+            </button>
+          </div>
         ))}
       </div>
     </div>
   </section>
 </Layout>
+
+<script>
+  // Store cart functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const addToCartButtons = document.querySelectorAll('.add-to-cart-btn');
+    
+    addToCartButtons.forEach(button => {
+      button.addEventListener('click', function(e) {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const productId = this.dataset.productId;
+        const productName = this.dataset.productName;
+        const productImage = this.dataset.productImage;
+        const productPrice = parseFloat(this.dataset.productPrice || '0');
+        const variants = JSON.parse(this.dataset.variants || '[]');
+        
+        // If there are multiple variants, show a selection modal
+        if (variants.length > 1) {
+          showVariantSelector(productId, productName, productImage, variants);
+        } else if (variants.length === 1) {
+          // Single variant, add directly
+          const variant = variants[0];
+          const price = parseFloat(variant.retail_price || variant.price || '0');
+          addToCart(productId, productName, productImage, price, variant.name, variant.id);
+          showAddedToCartFeedback(this);
+        } else {
+          // No variants, add as basic product
+          addToCart(productId, productName, productImage, productPrice, 'Default', 'default');
+          showAddedToCartFeedback(this);
+        }
+      });
+    });
+  });
+
+  function showVariantSelector(productId, productName, productImage, variants) {
+    // Create a simple variant selector modal
+    const modal = document.createElement('div');
+    modal.className = 'variant-modal';
+    modal.innerHTML = `
+      <div class="variant-backdrop"></div>
+      <div class="variant-content">
+        <div class="variant-header">
+          <h3>Select Variant</h3>
+          <button class="close-variant-btn">&times;</button>
+        </div>
+        <div class="variant-body">
+          <h4>${productName}</h4>
+          <div class="variant-options">
+            ${variants.map(variant => {
+              const price = parseFloat(variant.retail_price || variant.price || '0');
+              return `
+                <button class="variant-option" 
+                        data-variant-id="${variant.id}" 
+                        data-variant-name="${variant.name}"
+                        data-variant-price="${price}">
+                  <span class="variant-name">${variant.name}</span>
+                  <span class="variant-price">€${price.toFixed(2)}</span>
+                </button>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      </div>
+    `;
+    
+    document.body.appendChild(modal);
+    
+    // Add event listeners
+    const closeBtn = modal.querySelector('.close-variant-btn');
+    const backdrop = modal.querySelector('.variant-backdrop');
+    const variantOptions = modal.querySelectorAll('.variant-option');
+    
+    function closeModal() {
+      document.body.removeChild(modal);
+    }
+    
+    closeBtn.addEventListener('click', closeModal);
+    backdrop.addEventListener('click', closeModal);
+    
+    variantOptions.forEach(option => {
+      option.addEventListener('click', function() {
+        const variantId = this.dataset.variantId;
+        const variantName = this.dataset.variantName;
+        const variantPrice = parseFloat(this.dataset.variantPrice);
+        
+        addToCart(productId, productName, productImage, variantPrice, variantName, variantId);
+        closeModal();
+        
+        // Show feedback on the original button
+        const originalBtn = document.querySelector(`[data-product-id="${productId}"]`);
+        if (originalBtn) {
+          showAddedToCartFeedback(originalBtn);
+        }
+      });
+    });
+    
+    // Show modal
+    setTimeout(() => modal.classList.add('show'), 10);
+  }
+
+  function showAddedToCartFeedback(button) {
+    const originalText = button.innerHTML;
+    button.innerHTML = `
+      <svg viewBox="0 0 24 24" fill="none">
+        <path d="M20 6L9 17l-5-5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      Added!
+    `;
+    button.classList.add('added');
+    
+    setTimeout(() => {
+      button.innerHTML = originalText;
+      button.classList.remove('added');
+    }, 2000);
+  }
+</script>
+
+<style>
+  .variant-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 10000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    
+    &.show {
+      opacity: 1;
+      visibility: visible;
+    }
+  }
+  
+  .variant-backdrop {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(4px);
+  }
+  
+  .variant-content {
+    position: relative;
+    background: linear-gradient(145deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-radius: 16px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    overflow: hidden;
+    transform: scale(0.9);
+    transition: transform 0.3s ease;
+  }
+  
+  .variant-modal.show .variant-content {
+    transform: scale(1);
+  }
+  
+  .variant-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    
+    h3 {
+      margin: 0;
+      color: #fff;
+      font-size: 1.25rem;
+    }
+    
+    .close-variant-btn {
+      background: none;
+      border: none;
+      color: rgba(255, 255, 255, 0.7);
+      font-size: 1.5rem;
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: 4px;
+      transition: all 0.3s ease;
+      
+      &:hover {
+        color: #fff;
+        background: rgba(255, 255, 255, 0.1);
+      }
+    }
+  }
+  
+  .variant-body {
+    padding: 1.5rem;
+    
+    h4 {
+      margin: 0 0 1rem 0;
+      color: rgba(255, 255, 255, 0.9);
+      font-size: 1rem;
+    }
+  }
+  
+  .variant-options {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+  
+  .variant-option {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    color: #fff;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    
+    &:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(168, 85, 247, 0.5);
+      transform: translateX(4px);
+    }
+    
+    .variant-name {
+      font-weight: 500;
+    }
+    
+    .variant-price {
+      font-weight: 600;
+      color: #a855f7;
+    }
+  }
+  
+  .add-to-cart-btn {
+    &.added {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      
+      &:hover {
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      }
+    }
+  }
+</style>

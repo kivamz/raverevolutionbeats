@@ -1,32 +1,104 @@
 ---
 import '../styles/global.scss';
 import '../styles/header.scss';
+
+const baseUrl = import.meta.env.BASE_URL || '/';
 ---
-<header>
+<header class="header">
+  <div class="header-background">
+    <div class="bg-blur"></div>
+    <div class="bg-gradient"></div>
+  </div>
+  
   <div class="container">
-    <a href="" class="logo">
-      <img src="logo.png" alt="Logo" />
+    <a href={baseUrl} class="logo">
+      <img src={`${baseUrl}logo.png`} alt="Rave Revolution Beats" />
+      <span class="logo-text">Rave Revolution</span>
     </a>
-    <button class="menu-toggle" aria-label="Toggle Navigation">
-      <span class="menu-icon">☰</span>
-      <span class="menu-text">Menu</span>
+      <button class="menu-toggle" aria-label="Toggle Navigation">
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
     </button>
-    <nav class="nav">
+      <div class="header-actions">
+      <button class="cart-toggle" aria-label="Shopping Cart">
+        <svg class="cart-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M2.25 3H4.5L6.75 9.75H18L20.25 6H7.5M6.75 9.75L5.25 15H19.5M6.75 9.75H18M9 19.5C9.82843 19.5 10.5 20.1716 10.5 21C10.5 21.8284 9.82843 22.5 9 22.5C8.17157 22.5 7.5 21.8284 7.5 21C7.5 20.1716 8.17157 19.5 9 19.5ZM19.5 19.5C20.3284 19.5 21 20.1716 21 21C21 21.8284 20.3284 22.5 19.5 22.5C18.6716 22.5 18 21.8284 18 21C18 20.1716 18.6716 19.5 19.5 19.5Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        <span class="cart-count" id="cart-count">0</span>
+      </button>
+    </div>
+      <nav class="nav">
       <ul>
-        <li><a href="">Home</a></li>
-        <li><a href="about">About</a></li>
-        <li><a href="music">Music</a></li>
-        <li><a href="store">Store</a></li>
-        <li><a href="contact">Contact</a></li>
+        <li><a href={baseUrl} class="nav-link">Home</a></li>
+        <li><a href={`${baseUrl}about`} class="nav-link">About</a></li>
+        <li><a href={`${baseUrl}music`} class="nav-link">Music</a></li>
+        <li><a href={`${baseUrl}store`} class="nav-link">Store</a></li>
+        <li><a href={`${baseUrl}subscribe`} class="nav-link subscribe-link">
+          <span>Subscribe</span>
+          <svg class="link-icon" viewBox="0 0 24 24" fill="none">
+            <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+          </svg>
+        </a></li>
+        <li><a href={`${baseUrl}contact`} class="nav-link">Contact</a></li>
       </ul>
     </nav>
   </div>
 </header>
 
-<script client:load>
-  const toggleButton = document.querySelector('.menu-toggle');
+<script>  const toggleButton = document.querySelector('.menu-toggle');
+  const nav = document.querySelector('.nav');
   const navList = document.querySelector('nav ul');
-  toggleButton.addEventListener('click', () => {
-    navList.classList.toggle('open');
+  const header = document.querySelector('.header');
+  const logoImg = document.querySelector('.logo img');
+  const logoText = document.querySelector('.logo-text');
+  const cartToggle = document.querySelector('.cart-toggle');
+  
+  // Toggle mobile menu
+  toggleButton?.addEventListener('click', () => {
+    nav?.classList.toggle('open');
+    toggleButton.classList.toggle('active');
+  });
+  
+  // Cart toggle functionality
+  cartToggle?.addEventListener('click', () => {
+    if (window.toggleCart) {
+      window.toggleCart();
+    }
+  });
+  
+  // Header background on scroll
+  window.addEventListener('scroll', () => {
+    if (window.scrollY > 50) {
+      header?.classList.add('scrolled');
+    } else {
+      header?.classList.remove('scrolled');
+    }
+  });
+  
+  // Close mobile menu when clicking on a link
+  document.querySelectorAll('.nav-link').forEach(link => {
+    link.addEventListener('click', () => {
+      nav?.classList.remove('open');
+      toggleButton?.classList.remove('active');
+    });
+  });
+    // Close mobile menu when clicking outside
+  document.addEventListener('click', (e) => {
+    const target = e.target as Element;
+    if (!nav?.contains(target) && !toggleButton?.contains(target)) {
+      nav?.classList.remove('open');
+      toggleButton?.classList.remove('active');
+    }
+  });
+  
+  // Show text fallback if logo image fails to load
+  logoImg?.addEventListener('error', () => {
+    const logoTextElement = logoText as HTMLElement;
+    if (logoTextElement) {
+      logoTextElement.style.display = 'block';
+    }
   });
 </script>

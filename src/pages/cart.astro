@@ -1,0 +1,191 @@
+---
+import Layout from '../components/Layout.astro';
+import '../styles/cart.scss';
+---
+
+<Layout>
+  <section class="cart-page">
+    <div class="container">
+      <h1>Shopping Cart</h1>
+      
+      <div class="cart-container">
+        <div class="cart-items-section">
+          <div id="cart-items-list" class="cart-items-list">
+            <!-- Cart items will be populated by JavaScript -->
+          </div>
+          
+          <div id="empty-cart-message" class="empty-cart-message">
+            <svg width="80" height="80" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M3 3H5L5.4 5M7 13H17L21 5H5.4M7 13L5.4 5M7 13L4.7 15.3C4.3 15.7 4.6 16.5 5.1 16.5H17M17 13V16.5M9 19.5A1.5 1.5 0 1 1 12 19.5A1.5 1.5 0 0 1 9 19.5ZM20 19.5A1.5 1.5 0 1 1 17 19.5A1.5 1.5 0 0 1 20 19.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            <h2>Your cart is empty</h2>
+            <p>Add some products to get started!</p>
+            <a href="/store" class="shop-now-btn">Shop Now</a>
+          </div>
+        </div>
+        
+        <div class="cart-summary">
+          <div class="summary-content">
+            <h3>Order Summary</h3>
+            
+            <div class="summary-row">
+              <span>Subtotal:</span>
+              <span id="cart-subtotal">$0.00</span>
+            </div>
+            
+            <div class="summary-row">
+              <span>Shipping:</span>
+              <span id="cart-shipping">Free</span>
+            </div>
+            
+            <div class="summary-row">
+              <span>Tax:</span>
+              <span id="cart-tax">$0.00</span>
+            </div>
+            
+            <div class="summary-divider"></div>
+            
+            <div class="summary-row total">
+              <span>Total:</span>
+              <span id="cart-total">$0.00</span>
+            </div>
+            
+            <div class="cart-actions">
+              <button id="checkout-btn" class="checkout-btn" disabled>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Proceed to Checkout
+              </button>
+              
+              <button id="clear-cart-btn" class="clear-cart-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M3 6H5H21M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Clear Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
+
+<script>
+  // Cart page functionality
+  document.addEventListener('DOMContentLoaded', function() {
+    const cartItemsList = document.getElementById('cart-items-list');
+    const emptyCartMessage = document.getElementById('empty-cart-message');
+    const cartSubtotal = document.getElementById('cart-subtotal');
+    const cartTax = document.getElementById('cart-tax');
+    const cartTotal = document.getElementById('cart-total');
+    const checkoutBtn = document.getElementById('checkout-btn');
+    const clearCartBtn = document.getElementById('clear-cart-btn');
+
+    function updateCartPage() {
+      const cart = getCart();
+      const isEmpty = cart.length === 0;
+      
+      if (cartItemsList) cartItemsList.style.display = isEmpty ? 'none' : 'block';
+      if (emptyCartMessage) emptyCartMessage.style.display = isEmpty ? 'flex' : 'none';
+      
+      if (!isEmpty) {
+        renderCartPageItems(cart);
+        updateCartPageTotals(cart);
+      }
+      
+      if (checkoutBtn) checkoutBtn.disabled = isEmpty;
+      if (clearCartBtn) clearCartBtn.style.display = isEmpty ? 'none' : 'block';
+    }
+
+    function renderCartPageItems(cart) {
+      if (!cartItemsList) return;
+      
+      cartItemsList.innerHTML = cart.map(item => `
+        <div class="cart-item" data-product-id="${item.id}" data-variant-id="${item.variantId}">
+          <div class="item-image">
+            <img src="${item.image || '/placeholder.jpg'}" alt="${item.name}">
+          </div>
+          
+          <div class="item-details">
+            <h3 class="item-name">${item.name}</h3>
+            <p class="item-variant">${item.variant}</p>
+            <p class="item-price">$${item.price.toFixed(2)} each</p>
+          </div>
+          
+          <div class="item-controls">
+            <div class="quantity-controls">
+              <button onclick="updateCartItemQuantity('${item.id}', '${item.variantId}', ${item.quantity - 1})" ${item.quantity <= 1 ? 'disabled' : ''}>
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+              <input type="number" class="quantity-input" value="${item.quantity}" min="1" 
+                     onchange="updateCartItemQuantity('${item.id}', '${item.variantId}', parseInt(this.value))">
+              <button onclick="updateCartItemQuantity('${item.id}', '${item.variantId}', ${item.quantity + 1})">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+            
+            <div class="item-total">$${(item.price * item.quantity).toFixed(2)}</div>
+            
+            <button class="remove-item" onclick="removeFromCart('${item.id}', '${item.variantId}')" title="Remove item">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 6H5H21M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    function updateCartPageTotals(cart) {
+      const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+      const tax = subtotal * 0.1; // 10% tax (adjust as needed)
+      const total = subtotal + tax;
+      
+      if (cartSubtotal) cartSubtotal.textContent = `$${subtotal.toFixed(2)}`;
+      if (cartTax) cartTax.textContent = `$${tax.toFixed(2)}`;
+      if (cartTotal) cartTotal.textContent = `$${total.toFixed(2)}`;
+    }
+
+    // Make functions available globally for inline event handlers
+    window.updateCartItemQuantity = function(productId, variantId, newQuantity) {
+      if (newQuantity <= 0) {
+        removeFromCart(productId, variantId);
+      } else {
+        const cart = getCart();
+        const item = cart.find(item => item.id === productId && item.variantId === variantId);
+        if (item) {
+          item.quantity = Math.max(1, newQuantity);
+          saveCart(cart);
+          updateCartPage();
+          updateCartCount();
+        }
+      }
+    };
+
+    // Event listeners
+    checkoutBtn?.addEventListener('click', () => {
+      const cart = getCart();
+      if (cart.length > 0) {
+        // Redirect to checkout page (implement as needed)
+        alert('Checkout functionality will be implemented soon!');
+      }
+    });
+
+    clearCartBtn?.addEventListener('click', () => {
+      if (confirm('Are you sure you want to clear your cart?')) {
+        clearCart();
+        updateCartPage();
+        updateCartCount();
+      }
+    });
+
+    // Initial page load
+    updateCartPage();
+  });
+</script>

@@ -39,7 +39,6 @@ export async function getStaticPaths() {
       params: { slug: `${product.id}-${slugify(product.name)}` }
     }));
   } catch (error) {
-    console.error("Error generando rutas estáticas:", error);
     return [];
   }
 }
@@ -56,7 +55,6 @@ const formatEuro = (value, currency = "EUR") =>
 
 // Función para obtener variante enriquecida (GET /products/variant/{id}).
 async function getVariantComplete(id) {
-  console.log("Llamada a getVariantComplete para id:", id);
   try {
     const res = await fetch(`${PRINTFUL_API_BASE}products/variant/${id}`, {
       headers: {
@@ -65,21 +63,17 @@ async function getVariantComplete(id) {
       }
     });
     const json = await res.json();
-    console.log("Respuesta de getVariantComplete para id:", id, "json:", json);
     if (json && json.code === 200 && json.result && json.result.variant) {
       return json.result.variant;
     }
-    console.error("Respuesta inesperada para variante", id, json);
     return undefined;
   } catch (error) {
-    console.error("Error en getVariantComplete:", error);
     return undefined;
   }
 }
 
 let product = null;
 try {
-  console.log("Obteniendo producto con id:", productId);
   const res = await fetch(`${PRINTFUL_API_BASE}store/products/${productId}`, {
     headers: {
       "Authorization": `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
@@ -87,11 +81,11 @@ try {
     }
   });
   const data = await res.json();
-  console.log("Respuesta del producto:", data);
+  
   product = data.result?.sync_product || null;
   if (product) {
     const basicVariants = data.result.sync_variants || [];
-    product.sync_variants = basicVariants; // Guardamos fallback.
+    product.sync_variants = basicVariants;
     product.variants = await Promise.all(
       basicVariants.map(async (variant) => {
         const idToUse = variant.variant_id ? variant.variant_id : variant.id;
@@ -102,14 +96,11 @@ try {
       })
     );
     if (!product.variants.length && basicVariants.length) {
-      console.log("Producto.variants vacío; usando basicVariants como fallback");
       product.variants = basicVariants;
     }
-    console.log("Producto final con variantes:", product);
-    console.log("JSON de variantes a inyectar:", JSON.stringify(product.variants || []));
   }
 } catch (error) {
-  console.error("Error obteniendo producto:", error);
+  // Error obteniendo producto
 }
 
 let uniqueColorVariants = [];
@@ -138,10 +129,17 @@ if (product?.variants?.length) {
             {product.description && <p class="product-description">{product.description}</p>}
           </div>
           <div class="product-flex">
-            <div class="image-container">
-              {product.thumbnail_url && (
-                <img id="main-product-image" src={product.thumbnail_url} alt={product.name} />
-              )}
+            <div class="image-gallery">
+              <div class="main-image-container">
+                {product.thumbnail_url && (
+                  <img id="main-product-image" src={product.thumbnail_url} alt={product.name} />
+                )}
+              </div>
+              <div class="thumbnails-container">
+                <div id="image-thumbnails" class="thumbnails-grid">
+                  <!-- Las miniaturas se generarán dinámicamente via JavaScript -->
+                </div>
+              </div>
             </div>
             <aside class="options-sidebar">
               {uniqueColorVariants.length > 0 && (
@@ -174,8 +172,7 @@ if (product?.variants?.length) {
                     ))}
                   </div>
                 </div>
-              )}
-              <div class="price-display">
+              )}              <div class="price-display">
                 <span id="selected-price">
                   {product.variants.length > 0 &&
                     formatEuro(
@@ -184,14 +181,20 @@ if (product?.variants?.length) {
                     )}
                 </span>
               </div>
+              
+              <!-- Status indicator -->
+              <div id="selection-status" style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; text-align: center; color: #fff; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+                Please select color and size
+              </div>
+              
               <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button>
               <!-- Mensaje de confirmación -->
-              <div id="cart-message" style="display: none; margin-top: 10px; color: green; font-weight: bold;">
-                Producto añadido al carrito!
+              <div id="cart-message" style="display: none; margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border-radius: 4px; text-align: center;">
+                ✅ Producto añadido al carrito!
               </div>
             </aside>
           </div>
-          <!-- Inyectamos variantes y producto en un JSON (forzado a usar fallback si es necesario) -->
+          <!-- Inyectamos variantes y producto en un JSON -->
           <script id="variants-data" type="application/json">{JSON.stringify((product.variants && product.variants.length) ? product.variants : (product.sync_variants || []))}</script>
           <script id="product-data" type="application/json">{JSON.stringify(product)}</script>
         </>
@@ -211,210 +214,402 @@ if (product?.variants?.length) {
       // Configuración del modal
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
-  
-      // Recuperar variantes desde la etiqueta "variants-data"
+      
+      // Recuperar variantes y producto desde JSON
       const variantsDataEl = document.getElementById("variants-data");
-      let variants = [];
-      if (variantsDataEl) {
-        try {
-          variants = JSON.parse(variantsDataEl.textContent.trim());
-          console.log("Variantes parseadas desde 'variants-data' (length:", variants.length, "):", variants);
-        } catch (e) {
-          console.error("Error parseando JSON de variantes", e);
-        }
-      }
-  
-      // Recuperar producto desde la etiqueta "product-data"
-      let product = {};
       const productDataEl = document.getElementById("product-data");
-      if (productDataEl) {
-        try {
-          product = JSON.parse(productDataEl.textContent.trim());
-          console.log("Producto parseado desde 'product-data':", product);
-        } catch (e) {
-          console.error("Error parseando JSON de producto", e);
-        }
+      
+      let variants = [];
+      let product = {};
+      try {
+        variants = variantsDataEl ? JSON.parse(variantsDataEl.textContent.trim()) : [];
+        product = productDataEl ? JSON.parse(productDataEl.textContent.trim()) : {};
+      } catch (e) {
+        // Error parsing JSON data
       }
-  
-      // Fallback: si variants es vacío, usar product.sync_variants si existe.
-      if (!variants.length && product.sync_variants && product.sync_variants.length) {
+
+      // Fallback
+      if (!variants.length && product.sync_variants) {
         variants = product.sync_variants;
-        console.log("Usando product.sync_variants como fallback. Variantes (length:", variants.length, "):", variants);
       }
-  
-      console.log("Producto cargado:", product, "Variantes finales (length:", variants.length, "):", variants);
-  
+      
+      // Calculate unique colors and sizes
+      let uniqueColorVariants = [];
+      let uniqueSizes = [];
+      if (variants?.length) {
+        const colorDict = {};
+        const sizeSet = new Set();
+        variants.forEach(v => {
+          if (v.color) {
+            const key = v.color.trim().toLowerCase();
+            if (!colorDict[key]) colorDict[key] = v;
+          }
+          if (v.size) sizeSet.add(v.size.trim());
+        });
+        uniqueColorVariants = Object.values(colorDict);
+        uniqueSizes = Array.from(sizeSet);
+      }
+
       let selectedColor = null, selectedSize = null;
-  
+
+      // FUNCIONES AUXILIARES
+      const findVariant = (color, size) => {
+        return variants.find(v => {
+          const variantColor = (v.color || "").trim().toLowerCase();
+          const variantSize = (v.size || "").trim().toLowerCase();
+          const searchColor = (color || "").trim().toLowerCase();
+          const searchSize = (size || "").trim().toLowerCase();
+          
+          return variantColor === searchColor && variantSize === searchSize;
+        });
+      };
+
+      const getVariantImageUrl = (variant) => {
+        if (variant.files && variant.files.length > 0) {
+          const previewFile = variant.files.find(f => f.type === 'preview');
+          if (previewFile && previewFile.preview_url) {
+            return previewFile.preview_url;
+          }
+          if (variant.files[0] && variant.files[0].preview_url) {
+            return variant.files[0].preview_url;
+          }
+        }
+        if (variant.thumbnail_url) {
+          return variant.thumbnail_url;
+        }
+        return null;
+      };
+
+      // GALERÍA DE IMÁGENES
+      const generateImageGallery = () => {
+        const thumbnailsContainer = document.getElementById("image-thumbnails");
+        if (!thumbnailsContainer) return;
+        
+        const uniqueImages = new Map();
+        
+        // Agregar imagen principal del producto
+        if (product.thumbnail_url) {
+          uniqueImages.set(product.thumbnail_url, {
+            url: product.thumbnail_url,
+            label: 'Principal',
+            color: 'default'
+          });
+        }
+        
+        // Agregar imágenes de TODAS las variantes
+        variants.forEach(variant => {
+          const imageUrl = getVariantImageUrl(variant);
+          if (imageUrl && !uniqueImages.has(imageUrl)) {
+            uniqueImages.set(imageUrl, {
+              url: imageUrl,
+              label: variant.color || 'Variante',
+              color: variant.color || 'default'
+            });
+          }
+        });
+        
+        // Generar thumbnails solo si hay más de una imagen
+        if (uniqueImages.size > 1) {
+          thumbnailsContainer.innerHTML = '';
+          uniqueImages.forEach((image, url) => {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = url;
+            thumbnail.alt = image.label;
+            thumbnail.className = 'thumbnail';
+            thumbnail.title = image.label;
+            thumbnail.dataset.color = image.color;
+            
+            // Marcar como activa la imagen principal al inicio
+            if (url === product.thumbnail_url) {
+              thumbnail.classList.add('active');
+            }
+            
+            thumbnail.addEventListener('click', () => {
+              updateMainImage(url);
+              updateActiveThumbnail(thumbnail);
+            });
+            
+            thumbnailsContainer.appendChild(thumbnail);
+          });
+        } else {
+          // Si solo hay una imagen, ocultar el contenedor de thumbnails
+          thumbnailsContainer.style.display = 'none';
+        }
+      };
+
+      const updateMainImage = (imageUrl) => {
+        const mainImg = document.getElementById("main-product-image");
+        if (mainImg && imageUrl && imageUrl !== mainImg.src) {
+          mainImg.style.opacity = "0.5";
+          mainImg.style.filter = "blur(2px)";
+          
+          const newImg = new Image();
+          newImg.onload = () => {
+            mainImg.src = imageUrl;
+            mainImg.style.opacity = "1";
+            mainImg.style.filter = "none";
+          };
+          newImg.onerror = () => {
+            mainImg.style.opacity = "1";
+            mainImg.style.filter = "none";
+          };
+          newImg.src = imageUrl;
+        }
+      };
+
+      const updateActiveThumbnail = (activeThumbnail) => {
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+          thumb.classList.remove('active');
+        });
+        activeThumbnail.classList.add('active');
+      };
+
+      // ACTUALIZACIÓN DE UI
       const updateUI = () => {
         try {
-          console.log("updateUI INICIO: color:", selectedColor, "talla:", selectedSize);
           const priceEl = document.getElementById("selected-price");
           const imgEl = document.getElementById("main-product-image");
-          console.log("updateUI: Elementos UI: priceEl:", priceEl, "imgEl:", imgEl);
-          console.log("updateUI: Variantes disponibles (length:", variants.length, "):", variants);
-          if (!variants.length) { 
-            console.log("No hay variantes disponibles");
-            return; 
-          }
-  
+          
+          if (!variants.length) return;
+          
           if (selectedColor && selectedSize) {
-            console.log("Buscando variante para:", selectedColor, selectedSize);
-            const variant = variants.find(v => {
-              const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-              const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-              console.log("updateUI - Comparando variante: color:", variantColor, "talla:", variantSize);
-              return variantColor === selectedColor.trim().toLowerCase() &&
-                     variantSize === selectedSize.trim().toLowerCase();
-            });
-            console.log("updateUI - Resultado de búsqueda:", variant);
-            if (variant && imgEl && priceEl) {
-              console.log("updateUI - Variante encontrada, actualizando precio e imagen.");
-              priceEl.textContent = new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: variant.currency || "EUR"
-              }).format(parseFloat(variant.retail_price));
-              imgEl.src = variant.thumbnail_url;
+            const variant = findVariant(selectedColor, selectedSize);
+            
+            if (variant) {
+              // Variante válida - actualizar precio e imagen
+              if (priceEl) {
+                const newPrice = new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: variant.currency || "EUR"
+                }).format(parseFloat(variant.retail_price || variant.price || "0"));
+                priceEl.textContent = newPrice;
+                priceEl.style.color = "";
+              }
+              
+              // Actualizar imagen
+              if (imgEl) {
+                const newImageUrl = getVariantImageUrl(variant);
+                if (newImageUrl) {
+                  updateMainImage(newImageUrl);
+                  
+                  // Actualizar thumbnail activo
+                  const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
+                  if (matchingThumbnail) {
+                    updateActiveThumbnail(matchingThumbnail);
+                  }
+                }
+              }
             } else {
-              console.log("updateUI - No se encontró variante específica, usando precio mínimo.");
+              // Combinación no válida
+              if (priceEl) {
+                const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+                priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: variants[0].currency || "EUR"
+                }).format(lowestPrice);
+                priceEl.style.color = "#ff6b6b";
+                setTimeout(() => { priceEl.style.color = ""; }, 2000);
+              }
+            }
+          } else {
+            // Selección incompleta
+            if (priceEl) {
               const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
               priceEl.textContent = new Intl.NumberFormat("es-ES", {
                 style: "currency",
                 currency: variants[0].currency || "EUR"
               }).format(lowestPrice);
+              priceEl.style.color = "";
             }
-          } else {
-            console.log("updateUI - Combinación incompleta, mostrando precio mínimo.");
-            const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-            priceEl.textContent = new Intl.NumberFormat("es-ES", {
-              style: "currency",
-              currency: variants[0].currency || "EUR"
-            }).format(lowestPrice);
-          }
-  
+          }          // BOTÓN Y STATUS - Se actualiza según la selección
           const addBtn = document.getElementById("add-to-cart");
-          if (selectedColor && selectedSize) {
-            addBtn.disabled = false;
-            addBtn.style.opacity = 1;
-          } else {
-            addBtn.disabled = true;
-            addBtn.style.opacity = 0.5;
+          const statusEl = document.getElementById("selection-status");
+          
+          if (addBtn && statusEl) {
+            if (selectedColor && selectedSize) {
+              const variant = findVariant(selectedColor, selectedSize);
+              
+              if (variant) {
+                // Combinación válida - activar botón
+                addBtn.disabled = false;
+                addBtn.style.opacity = "1";
+                addBtn.textContent = "Add to Cart";
+                addBtn.style.background = "";
+                
+                statusEl.innerHTML = `✅ Selected: ${selectedColor} - ${selectedSize}`;
+                statusEl.style.background = "rgba(76, 175, 80, 0.2)";
+                statusEl.style.borderColor = "rgba(76, 175, 80, 0.5)";
+                statusEl.style.color = "#4CAF50";
+              } else {
+                // Combinación no válida - desactivar
+                addBtn.disabled = true;
+                addBtn.style.opacity = "0.6";
+                addBtn.textContent = "Combination Not Available";
+                addBtn.style.background = "#ff6b6b";
+                
+                statusEl.innerHTML = `❌ Combination not available: ${selectedColor} - ${selectedSize}`;
+                statusEl.style.background = "rgba(255, 107, 107, 0.2)";
+                statusEl.style.borderColor = "rgba(255, 107, 107, 0.5)";
+                statusEl.style.color = "#ff6b6b";
+              }
+            } else {
+              // Sin color o talla - desactivar
+              addBtn.disabled = true;
+              addBtn.style.opacity = "0.6";
+              addBtn.textContent = "Select Color and Size";
+              addBtn.style.background = "#666";
+              
+              let statusText = "Please select: ";
+              if (!selectedColor && !selectedSize) {
+                statusText += "color and size";
+              } else if (!selectedColor) {
+                statusText += "color";
+              } else {
+                statusText += "size";
+              }
+              
+              statusEl.innerHTML = statusText;
+              statusEl.style.background = "rgba(255, 255, 255, 0.1)";
+              statusEl.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              statusEl.style.color = "#fff";
+            }
           }
-          console.log("updateUI FINALIZADO: color:", selectedColor, "talla:", selectedSize);
         } catch (error) {
-          console.error("Error en updateUI:", error);
-        }
-      };
-  
-      // Función para agregar al carrito.
+          // Error en updateUI
+        }      };
+
+      // FUNCIONALIDAD DEL CARRITO
       const addToCart = () => {
-        if (!selectedColor || !selectedSize) return;
-  
-        const variant = variants.find(v => {
-          const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-          const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-          return variantColor === selectedColor.trim().toLowerCase() &&
-                 variantSize === selectedSize.trim().toLowerCase();
-        });
-  
-        if (!variant) {
-          alert("La combinación seleccionada no existe.");
+        // Verificar que hay color y talla seleccionados
+        if (!selectedColor || !selectedSize) {
+          alert("Por favor selecciona color y talla.");
           return;
         }
-  
+
+        const variant = findVariant(selectedColor, selectedSize);
+        if (!variant) {
+          alert("La combinación seleccionada no está disponible.");
+          return;
+        }
+
         const cartItem = {
-          productId: productId,
+          productId: product.id,
           variantId: variant.id,
-          name: document.querySelector(".product-title")?.textContent || "",
+          name: product.name || "",
           color: variant.color,
           size: variant.size,
-          price: parseFloat(variant.retail_price || variant.price),
+          price: parseFloat(variant.retail_price || variant.price || "0"),
           quantity: 1,
-          thumbnail: variant.thumbnail_url,
+          thumbnail: getVariantImageUrl(variant) || product.thumbnail_url,
           currency: variant.currency || "EUR"
         };
-  
-        console.log("addToCart - Añadiendo al carrito:", cartItem);
-  
+
+        // Gestión del localStorage
         let cart = [];
         try {
-          cart = JSON.parse(localStorage.getItem("cart") || "[]");
-          console.log("addToCart - Carrito previo:", cart);
+          const existingCart = localStorage.getItem("cart");
+          cart = existingCart ? JSON.parse(existingCart) : [];
         } catch (e) {
-          console.error("Error parseando carrito:", e);
+          cart = [];
         }
-  
-        const existingIndex = cart.findIndex(item => item.variantId === cartItem.variantId);
+
+        // Buscar si ya existe este producto con la misma variante
+        const existingIndex = cart.findIndex(item => 
+          item.productId === cartItem.productId && 
+          item.variantId === cartItem.variantId
+        );
+        
         if (existingIndex > -1) {
+          // Si existe, incrementar cantidad
           cart[existingIndex].quantity += 1;
         } else {
+          // Si no existe, agregar nuevo
           cart.push(cartItem);
         }
-  
+
+        // Guardar en localStorage
         localStorage.setItem("cart", JSON.stringify(cart));
-        console.log("addToCart - Carrito actualizado:", cart);
-  
+
+        // Mostrar mensaje de confirmación
         const cartMessageEl = document.getElementById("cart-message");
         if (cartMessageEl) {
           cartMessageEl.style.display = "block";
+          cartMessageEl.style.animation = "fadeInOut 3s ease-in-out";
           setTimeout(() => {
             cartMessageEl.style.display = "none";
           }, 3000);
         }
+
+        // Disparar evento para actualizar contador del carrito si existe
+        window.dispatchEvent(new CustomEvent('cartUpdated', { 
+          detail: { 
+            cartLength: cart.length,
+            totalItems: cart.reduce((sum, item) => sum + item.quantity, 0)
+          }
+        }));
       };
-  
-      // Eventos para selección de color.
+
+      // EVENT LISTENERS
       document.querySelectorAll(".color-swatch").forEach(swatch => {
         swatch.addEventListener("click", () => {
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
           swatch.classList.add("selected");
           selectedColor = swatch.dataset.color;
-          console.log("Color seleccionado:", selectedColor);
+          
+          // Actualizar imagen principal según el color seleccionado
+          const colorVariant = variants.find(v => v.color && v.color.trim().toLowerCase() === selectedColor.trim().toLowerCase());
+          if (colorVariant) {
+            const newImageUrl = getVariantImageUrl(colorVariant);
+            if (newImageUrl) {
+              updateMainImage(newImageUrl);
+              // Actualizar thumbnail activo
+              const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
+              if (matchingThumbnail) {
+                updateActiveThumbnail(matchingThumbnail);
+              }
+            }          }
+          
           updateUI();
         });
       });
-  
-      // Eventos para selección de talla.
+
       document.querySelectorAll(".size-option").forEach(opt => {
         opt.addEventListener("click", () => {
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
-          opt.classList.add("selected");
-          selectedSize = opt.dataset.size;
-          console.log("Talla seleccionada:", selectedSize);
+          opt.classList.add("selected");          selectedSize = opt.dataset.size;
           updateUI();
         });
       });
-  
-      updateUI();
-  
-      document.getElementById("add-to-cart").addEventListener("click", () => {
-        console.log("Botón 'Add to Cart' presionado");
-        addToCart();
-      });
-  
+
+      document.getElementById("add-to-cart").addEventListener("click", addToCart);
+
+      // MODAL DE IMAGEN
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
       const mainImg = document.getElementById("main-product-image");
+      
       if (mainImg) {
         mainImg.addEventListener("click", () => {
           modal.style.display = "flex";
           modalImg.src = mainImg.src;
         });
       }
-  
+
       if (modalCloseElem) {
         modalCloseElem.addEventListener("click", () => {
           modal.style.display = "none";
         });
       }
-  
+
       if (modal) {
         modal.addEventListener("click", (e) => {
           if (e.target === modal) {
             modal.style.display = "none";
           }
         });
-      }
+      }      // INICIALIZACIÓN
+      generateImageGallery();
+      updateUI(); // Inicializar estado del botón
     });
   </script>
 </Layout>

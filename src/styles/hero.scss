@@ -1,85 +1,375 @@
-// src/styles/hero.scss
 @use 'variables' as *;
-@use "sass:color"; // Necesario para usar color.scale()
 
 .hero {
-  flex: 1; /* Se expande para ocupar el espacio disponible en desktop */
+  position: relative;
+  min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
-  padding: 2rem 0;
-  background-color: $black;
+  overflow: hidden;
+  background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #0f0f0f 100%);
+  
+  .hero-background {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+    
+    .bg-gradient {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: radial-gradient(circle at 30% 70%, rgba(138, 43, 226, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 30%, rgba(147, 112, 219, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.05) 0%, transparent 60%);
+    }
+    
+    .bg-particles {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: 
+        radial-gradient(2px 2px at 20% 30%, rgba(255, 255, 255, 0.1), transparent),
+        radial-gradient(2px 2px at 40% 70%, rgba(168, 85, 247, 0.3), transparent),
+        radial-gradient(1px 1px at 90% 40%, rgba(255, 255, 255, 0.2), transparent),
+        radial-gradient(1px 1px at 60% 10%, rgba(147, 112, 219, 0.2), transparent);
+      background-repeat: repeat;
+      background-size: 200px 200px, 300px 300px, 150px 150px, 250px 250px;
+      animation: particles 20s linear infinite;
+    }
+  }
+  
+  .container {
+    position: relative;
+    z-index: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    width: 100%;
+  }
+    .hero-content {
+    display: grid;
+    grid-template-columns: 1fr 400px;
+    gap: 4rem;
+    align-items: center;
+    margin-bottom: 2rem;
+  }
+  
+  .hero-main {
+    .hero-title {
+      margin: 0 0 2rem;
+      font-weight: 200;
+      line-height: 1.1;
+      
+      .title-line {
+        display: block;
+        font-size: clamp(3rem, 8vw, 6rem);
+        color: rgba(255, 255, 255, 0.9);
+        letter-spacing: -0.02em;
+      }
+      
+      .title-highlight {
+        display: block;
+        font-size: clamp(4rem, 10vw, 8rem);
+        font-weight: 600;
+        background: linear-gradient(135deg, #a855f7 0%, #6366f1 50%, #8b5cf6 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        letter-spacing: -0.04em;
+        text-shadow: 0 0 60px rgba(168, 85, 247, 0.5);
+      }
+    }
+    
+    .hero-description {
+      font-size: 1.125rem;
+      color: rgba(255, 255, 255, 0.7);
+      line-height: 1.7;
+      margin: 0 0 3rem;
+      max-width: 500px;
+      font-weight: 300;
+    }
+    
+    .hero-actions {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+  }
+  
+  .hero-subscribe {
+    .subscribe-card {
+      background: rgba(255, 255, 255, 0.02);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      border-radius: 24px;
+      padding: 2.5rem;
+      
+      h2 {
+        font-size: 1.5rem;
+        color: $white;
+        margin: 0 0 0.5rem;
+        font-weight: 400;
+      }
+      
+      p {
+        color: rgba(255, 255, 255, 0.7);
+        margin: 0 0 2rem;
+        font-size: 0.9rem;
+        line-height: 1.5;
+      }
+      
+      .subscribe-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        
+        .email-input {
+          background: rgba(255, 255, 255, 0.05);
+          border: 1px solid rgba(255, 255, 255, 0.1);
+          border-radius: 12px;
+          padding: 1rem;
+          color: $white;
+          font-size: 0.9rem;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          
+          &::placeholder {
+            color: rgba(255, 255, 255, 0.4);
+          }
+          
+          &:focus {
+            outline: none;
+            border-color: #a855f7;
+            box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+          }
+        }
+        
+        .subscribe-btn {
+          background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+          border: none;
+          border-radius: 12px;
+          padding: 1rem;
+          color: $white;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          gap: 0.5rem;
+          
+          .btn-icon {
+            width: 16px;
+            height: 16px;
+            transition: transform 0.3s ease;
+          }
+          
+          &:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(168, 85, 247, 0.4);
+            
+            .btn-icon {
+              transform: translateX(2px);
+            }
+          }
+          
+          &:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+          }
+        }
+      }
+        .subscribe-note {
+        font-size: 0.75rem;
+        color: rgba(255, 255, 255, 0.5);
+        margin: 0;
+        text-align: center;
+      }
+    }
+  }
+  
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 1rem 2rem;
+    border-radius: 12px;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 0.9rem;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+    
+    .btn-icon {
+      width: 18px;
+      height: 18px;
+      transition: transform 0.3s ease;
+    }
+    
+    &.btn-primary {
+      background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+      color: $white;
+      
+      &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 15px 35px rgba(168, 85, 247, 0.4);
+        
+        .btn-icon {
+          transform: scale(1.1);
+        }
+      }
+    }
+    
+    &.btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      color: $white;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      
+      &:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.2);
+        transform: translateY(-2px);
+      }
+    }
+  }
+  
+  .subscription-message {
+    position: fixed;
+    top: 2rem;
+    right: 2rem;
+    z-index: 1000;
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    color: $white;
+    font-weight: 500;
+    transform: translateX(400px);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    
+    &.show {
+      transform: translateX(0);
+    }
+    
+    &.success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.3);
+    }
+    
+    &.error {
+      background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+      box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3);
+    }
+    
+    &.info {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+    }
+  }
 }
 
-.hero h1 {
-  font-size: 3rem;
-  margin-bottom: 1rem;
-  color: $white;
+@keyframes particles {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-50px, -50px); }
 }
 
-.hero p {
-  font-size: 1.25rem;
-  color: $gray-light;
-  margin-bottom: 2rem;
+// Responsive Design
+@media (max-width: 1024px) {  .hero {
+    .hero-content {
+      grid-template-columns: 1fr;
+      gap: 3rem;
+      text-align: center;
+    }
+  }
 }
 
-.hero .btn {
-  display: inline-block;
-  background-color: $blue;
-  color: $white;
-  padding: 0.8rem 1.5rem;
-  border-radius: 9999px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-
-.hero .btn:hover {
-  background-color: $accent;
-}
-
-/* Sección extra dentro del Hero */
-.hero-extra {
-  margin-top: 2rem;
-}
-
-.hero-extra h2 {
-  font-size: 2rem;
-  margin-bottom: 0.5rem;
-  color: $blue;
-}
-
-.hero-extra p {
-  font-size: 1.125rem;
-  margin-bottom: 1rem;
-}
-
-.hero-extra .btn.secondary {
-  background-color: $purple;
-  color: $white;
-  padding: 0.8rem 1.5rem;
-  border-radius: 9999px;
-  text-decoration: none;
-  transition: background-color 0.3s;
-}
-
-.hero-extra .btn.secondary:hover {
-  background-color: color.scale($purple, $lightness: 10%);
-}
-
-/* Ajustes para dispositivos móviles */
 @media (max-width: 768px) {
   .hero {
-    flex: none;      /* Elimina el forzado de expansión */
-    padding: 1rem 0; /* Reduce el padding vertical */
+    min-height: 90vh;
+    
+    .container {
+      padding: 0 1rem;
+    }
+    
+    .hero-content {
+      gap: 2rem;
+      margin-bottom: 2rem;
+    }
+    
+    .hero-main {
+      .hero-title {
+        .title-line {
+          font-size: clamp(2rem, 8vw, 3rem);
+        }
+        
+        .title-highlight {
+          font-size: clamp(2.5rem, 10vw, 4rem);
+        }
+      }
+      
+      .hero-description {
+        font-size: 1rem;
+        margin-bottom: 2rem;
+      }
+      
+      .hero-actions {
+        justify-content: center;
+        
+        .btn {
+          padding: 0.875rem 1.5rem;
+          font-size: 0.85rem;
+        }
+      }
+    }
+      .hero-subscribe {
+      .subscribe-card {
+        padding: 2rem;
+      }
+    }
+    
+    .subscription-message {
+      top: 1rem;
+      right: 1rem;
+      left: 1rem;
+      transform: translateY(-100px);
+      
+      &.show {
+        transform: translateY(0);
+      }
+    }
   }
-  
-  .hero h1 {
-    font-size: 2.5rem;
-  }
-  
-  .hero p {
-    font-size: 1rem;
-    margin-bottom: 1.5rem;
+}
+
+@media (max-width: 480px) {
+  .hero {
+    .hero-actions {
+      flex-direction: column;
+      align-items: center;
+      
+      .btn {
+        width: 100%;
+        max-width: 280px;
+        justify-content: center;
+      }
+    }
+    
+    .hero-subscribe {
+      .subscribe-card {
+        padding: 1.5rem;
+        
+        .subscribe-form {
+          .subscribe-btn {
+            padding: 0.875rem;
+          }        }
+      }
+    }
   }
 }

@@ -1,6 +1,8 @@
+@use './variables' as *;
+
 .store {
   padding: 4rem 2rem;
-  background-color: #121212;
+  background-color: $gray-dark;
 
   .container {
     max-width: 1200px;
@@ -9,67 +11,149 @@
 
     h1 {
       font-size: 3rem;
-      color: #f0f0f0;
+      color: $white;
       margin-bottom: 0.5rem;
       font-weight: bold;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
     }
 
     p {
       font-size: 1.2rem;
-      color: #b0b0b0;
+      color: $gray-light;
       margin-bottom: 2rem;
     }
 
     .product-link {
       text-decoration: none;
-    }
-
-    .products {
+    }    .products {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
       gap: 2rem;
 
-      .product {
-        background: #1e1e1e;
+      .product-card {
+        background: $black;
         border-radius: 12px;
         overflow: hidden;
         box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
         transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 2px solid transparent;
+        position: relative;
 
         &:hover {
-          transform: translateY(-5px) scale(1.03);
-          box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+          transform: translateY(-5px);
+          box-shadow: 0 10px 25px rgba(138, 43, 226, 0.4);
+          border-color: $purple;
+        }
+      }
+
+      .product-link {
+        display: block;
+        text-decoration: none;
+      }
+
+      .product {
+        background: transparent;
+        border: none;
+        box-shadow: none;
+        transition: none;
+
+        &:hover {
+          transform: none;
+          box-shadow: none;
+          border: none;
         }
 
         img {
           width: 100%;
           height: auto;
           display: block;
-          border-bottom: 3px solid #af4fc8; // Acento con el morado rosado
-        }
-
-        .product-content {
+          border-bottom: 3px solid $purple;
+        }        .product-content {
           padding: 1.5rem;
 
           h2 {
             font-size: 1.8rem;
-            color: #f0f0f0;
+            color: $white;
             margin-bottom: 0.7rem;
             font-weight: bold;
           }
 
           p {
             font-size: 1rem;
-            color: #b0b0b0;
+            color: $gray-light;
             line-height: 1.5;
           }
 
           .price {
             font-size: 1.4rem;
             font-weight: bold;
-            color: #af4fc8; // Acá se utiliza el morado rosado para el precio
+            color: $purple;
             margin-top: 0.8rem;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
           }
+        }
+      }
+      
+      .add-to-cart-btn {
+        width: 100%;
+        padding: 1rem 1.5rem;
+        background: linear-gradient(135deg, #a855f7 0%, #6366f1 100%);
+        color: $white;
+        border: none;
+        border-radius: 0 0 12px 12px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+        
+        svg {
+          width: 18px;
+          height: 18px;
+          transition: transform 0.3s ease;
+        }
+        
+        &:hover {
+          background: linear-gradient(135deg, #9333ea 0%, #4f46e5 100%);
+          transform: translateY(-2px);
+          box-shadow: 0 8px 25px rgba(168, 85, 247, 0.4);
+          
+          svg {
+            transform: scale(1.1);
+          }
+        }
+        
+        &:active {
+          transform: translateY(0);
+        }
+        
+        &.added {
+          background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+          
+          &:hover {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            transform: translateY(0);
+          }
+        }
+        
+        &::before {
+          content: '';
+          position: absolute;
+          top: 0;
+          left: -100%;
+          width: 100%;
+          height: 100%;
+          background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+          transition: left 0.5s ease;
+        }
+        
+        &:hover::before {
+          left: 100%;
         }
       }
     }

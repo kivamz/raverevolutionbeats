@@ -1,23 +1,121 @@
 ---
 import '../styles/global.scss';
 import '../styles/hero.scss';
+
+const baseUrl = import.meta.env.BASE_URL || '/';
 ---
 <section class="hero">
-  <div class="container">
-    <h1>Feel the Beat</h1>
-    <p>
-      Step into a world where sound and rhythm take over. Experience deep bass, euphoric melodies, and electrifying vibes through
-      progressive house, techno, and trance.
-    </p>
-    <a href="music" class="btn">Listen Now</a>
-
-    <!-- Contenido extra que enriquece la sección Hero -->
-    <div class="hero-extra">
-      <h2>Join the Music Revolution</h2>
-      <p>
-        Stay updated with our latest releases, live sessions, and exclusive events. Let your heart beat in sync with the bass!
-      </p>
-      <a href="subscribe" class="btn secondary">Subscribe Now</a>
-    </div>
+  <div class="hero-background">
+    <div class="bg-gradient"></div>
+    <div class="bg-particles"></div>
   </div>
-</section>
+  
+  <div class="container">
+    <div class="hero-content">
+      <div class="hero-main">
+        <h1 class="hero-title">
+          <span class="title-line">Feel the</span>
+          <span class="title-highlight">Beat</span>
+        </h1>
+        <p class="hero-description">
+          Immerse yourself in the underground world of electronic music. 
+          Experience earth-shaking bass, hypnotic melodies, and pure euphoria 
+          through progressive house, techno, and trance.
+        </p>        <div class="hero-actions">
+          <a href={`${baseUrl}music`} class="btn btn-primary">
+            <span>Listen Now</span>
+            <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+              <path d="M8 5v14l11-7z" fill="currentColor"/>
+            </svg>
+          </a>          <a href={`${baseUrl}store`} class="btn btn-secondary">
+            <span>Explore Store</span>
+          </a>
+        </div>
+      </div>
+      
+      <div class="hero-subscribe">
+        <div class="subscribe-card">
+          <h2>Join the Revolution</h2>
+          <p>Get exclusive tracks, early access to events, and insider content.</p>
+          <form class="subscribe-form" id="subscribeForm">
+            <input 
+              type="email" 
+              placeholder="Enter your email" 
+              required 
+              class="email-input"
+              id="emailInput"
+            >
+            <button type="submit" class="subscribe-btn">
+              <span>Subscribe</span>
+              <svg class="btn-icon" viewBox="0 0 24 24" fill="none">
+                <path d="M5 12h14m-7-7l7 7-7 7" stroke="currentColor" stroke-width="2"/>
+              </svg>
+            </button>
+          </form>
+          <p class="subscribe-note">No spam, unsubscribe anytime</p>        </div>
+      </div>
+    </div>
+    
+    <!-- Notification for subscription -->
+    <div id="subscription-message" class="subscription-message"></div>
+  </section>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('subscribeForm');
+    const emailInput = document.getElementById('emailInput');
+    const messageDiv = document.getElementById('subscription-message');
+    
+    form?.addEventListener('submit', async function(e) {
+      e.preventDefault();
+      
+      const email = (emailInput as HTMLInputElement)?.value;
+      if (!email) return;
+      
+      // Show loading state
+      const submitBtn = form.querySelector('.subscribe-btn');
+      const originalText = submitBtn?.innerHTML;
+      if (submitBtn) {
+        submitBtn.innerHTML = '<span>Subscribing...</span>';
+        (submitBtn as HTMLButtonElement).disabled = true;
+      }
+      
+      try {
+        // Simulate API call
+        await new Promise(resolve => setTimeout(resolve, 1000));
+        
+        // Store in localStorage for now (in real app, would send to backend)
+        const subscribers = JSON.parse(localStorage.getItem('subscribers') || '[]');
+        
+        if (!subscribers.includes(email)) {
+          subscribers.push(email);
+          localStorage.setItem('subscribers', JSON.stringify(subscribers));
+          
+          showMessage('🎉 Welcome to the revolution! Check your email for confirmation.', 'success');
+          (emailInput as HTMLInputElement).value = '';
+        } else {
+          showMessage('⚡ You\'re already part of the revolution!', 'info');
+        }
+        
+      } catch (error) {
+        showMessage('❌ Something went wrong. Please try again.', 'error');
+      } finally {
+        // Reset button
+        if (submitBtn && originalText) {
+          submitBtn.innerHTML = originalText;
+          (submitBtn as HTMLButtonElement).disabled = false;
+        }
+      }
+    });
+    
+    function showMessage(text: string, type: string) {
+      if (!messageDiv) return;
+      
+      messageDiv.textContent = text;
+      messageDiv.className = `subscription-message ${type} show`;
+        setTimeout(() => {
+        messageDiv.classList.remove('show');
+      }, 4000);
+    }
+  });
+</script>
