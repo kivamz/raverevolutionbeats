@@ -1,0 +1,30 @@
+# Humans.txt - We are people, not machines
+
+/* TEAM */
+  Music Producer & DJ: Rave Revolution Beats
+  Contact: contact [at] raverevolutionbeats.com
+  Twitter: @RaveRevolutionB
+  Instagram: @raverevolutionbeats
+  Location: Global
+
+/* THANKS */
+  Electronic Music Community
+  Underground Rave Scene
+  All supporters and fans
+
+/* SITE */
+  Last update: 2025/06/13
+  Language: English
+  Doctype: HTML5
+  IDE: Visual Studio Code
+  Framework: Astro.js
+  Hosting: GitHub Pages
+  
+/* MUSIC PLATFORMS */
+  Spotify: https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1
+  Apple Music: https://music.apple.com/es/artist/rave-revolution-beats/1807818727
+  YouTube: https://youtube.com/@raverevolutionbeats
+  SoundCloud: https://www.soundcloud.com/rave-revolution-beats
+  Beatport: https://www.beatport.com/es/artist/rave-revolution-beats/1305790
+  Tidal: https://tidal.com/artist/56583093
+  Deezer: https://www.deezer.com/es/artist/317486241

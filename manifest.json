@@ -1,0 +1,56 @@
+{
+  "name": "Rave Revolution Beats - Electronic Music Experience",
+  "short_name": "RRB",
+  "description": "Experience the future of electronic music with Rave Revolution Beats. Stream progressive house, techno, and trance tracks.",
+  "start_url": "/raverevolutionbeats/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#a855f7",
+  "orientation": "portrait-primary",
+  "categories": ["music", "entertainment"],
+  "lang": "en-US",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "/raverevolutionbeats/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/raverevolutionbeats/og-image.jpg",
+      "sizes": "1200x630",
+      "type": "image/jpeg",
+      "form_factor": "wide",
+      "label": "Rave Revolution Beats Homepage"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Listen to Music",
+      "short_name": "Music",
+      "description": "Stream our latest electronic tracks",
+      "url": "/raverevolutionbeats/music/",
+      "icons": [
+        {
+          "src": "/raverevolutionbeats/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    },
+    {
+      "name": "Browse Store",
+      "short_name": "Store",
+      "description": "Shop for merchandise and music",
+      "url": "/raverevolutionbeats/store/",
+      "icons": [
+        {
+          "src": "/raverevolutionbeats/favicon.svg",
+          "sizes": "any"
+        }
+      ]
+    }
+  ]
+}
