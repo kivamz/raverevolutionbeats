@@ -1,221 +1,414 @@
-<!DOCTYPE html><html lang="en"> <head><base href="/raverevolutionbeats/"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Rave Revolution Beats</title><!-- CDN de Font Awesome --><script src="https://kit.fontawesome.com/5e60daf075.js" crossorigin="anonymous"></script><style>@charset "UTF-8";.product-detail{padding:3rem 1rem;background-color:#121212}.product-detail .container{width:100%;max-width:1200px;margin:0 auto}.product-detail .product-header{text-align:center;margin-bottom:2rem}.product-detail .product-header .product-title{font-size:2.8rem;color:#f0f0f0;margin-bottom:.5rem}.product-detail .product-header .product-description{font-size:1.2rem;color:#b0b0b0}.product-detail .product-flex{display:flex;flex-wrap:wrap;gap:2rem}.product-detail .product-flex .image-container{flex:1 1 400px;text-align:center}.product-detail .product-flex .image-container img{max-width:100%;border-radius:12px;box-shadow:0 2px 6px #0003;cursor:zoom-in;transition:transform .3s ease}.product-detail .product-flex .image-container img:hover{transform:scale(1.02)}.product-detail .product-flex .options-sidebar{flex:1 1 300px;display:flex;flex-direction:column;gap:1.5rem}.product-detail .product-flex .options-sidebar .option-group{text-align:left}.product-detail .product-flex .options-sidebar .option-group h2{font-size:1.5rem;color:#f0f0f0;margin-bottom:.5rem;border-bottom:2px solid #af4fc8;display:inline-block;padding-bottom:.2rem}.product-detail .product-flex .options-sidebar .option-group .color-options,.product-detail .product-flex .options-sidebar .option-group .size-options{display:flex;gap:1rem;flex-wrap:wrap}.product-detail .product-flex .options-sidebar .price-display{font-size:1.8rem;font-weight:700;color:#af4fc8;background:#af4fc814;padding:.5rem 1rem;border-radius:8px;text-align:center}.product-detail .product-flex .options-sidebar .add-to-cart{padding:1rem;font-size:1.2rem;background-color:#af4fc8;color:#fff;border:none;border-radius:8px;cursor:pointer;transition:transform .2s ease}.product-detail .product-flex .options-sidebar .add-to-cart:hover{transform:scale(1.05)}.product-detail .color-swatch{width:45px;height:45px;border-radius:50%;cursor:pointer;border:2px solid #555;transition:border-color .3s ease,transform .3s ease;display:flex;align-items:center;justify-content:center}.product-detail .color-swatch.selected{border:4px solid #af4fc8;transform:scale(1.1)}.product-detail .size-option{padding:.7rem 1.2rem;border:2px solid #555;border-radius:8px;cursor:pointer;font-size:1rem;color:#f0f0f0;transition:background-color .3s ease,border-color .3s ease}.product-detail .size-option.selected{background-color:#af4fc8;color:#fff;border-color:#af4fc8}.modal{display:none;position:fixed;z-index:1000;left:50%;top:50%;width:100%;height:100%;transform:translate(-50%,-50%);background-color:#000000e6;display:flex;align-items:center;justify-content:center}.modal-content{max-width:90%;max-height:90%;border-radius:12px;object-fit:contain}.modal-close{position:absolute;top:20px;right:35px;color:#fff;font-size:40px;font-weight:700;cursor:pointer;transition:color .3s ease}.modal-close:hover{color:#af4fc8}
-@charset "UTF-8";*,*:before,*:after{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background-color:#121212;color:#fff;line-height:1.6;display:flex;flex-direction:column;min-height:100vh}main{flex-grow:1;display:flex;flex-direction:column}@media (max-width: 768px){main{flex-grow:0;display:block}}.container{width:90%;max-width:1200px;margin:0 auto;padding:0 1rem}header{background-color:#000;padding:1rem 0;box-shadow:0 2px 4px #0000004d}header .container{display:flex;align-items:center;justify-content:space-between}header .logo img{height:100px;width:auto}header nav ul{list-style:none;display:flex;gap:1rem}header nav ul li a{color:#fff;text-decoration:none;transition:color .3s}header nav ul li a:hover{color:#00a8e8}header .menu-toggle{display:none}@media (max-width: 768px){header{padding:.75rem 0}header .container{flex-direction:column;align-items:center}header .logo{margin-bottom:.5rem}header .menu-toggle{display:flex;align-items:center;gap:.5rem;background:none;border:none;font-size:1.5rem;color:#fff;cursor:pointer;margin-bottom:.5rem}header nav ul{display:flex;flex-direction:column;gap:.5rem;width:100%;text-align:center;overflow:hidden;max-height:0;transition:max-height .3s ease-in-out,transform .3s ease,opacity .3s ease;transform:translateY(-10px);opacity:0}header nav ul.open{max-height:300px;transform:translateY(0);opacity:1}header nav ul li{width:100%}header nav ul li a{display:block;width:100%;padding:1rem;text-decoration:none;color:#fff;background-color:#000;transition:background-color .3s;border-bottom:1px solid rgba(255,255,255,.1);text-align:center}header nav ul li a:hover,header nav ul li a:focus{background-color:#fff3}}.footer{background-color:#1c1c1e;color:#d1d1d6;padding:3rem 0;font-size:.9rem;box-shadow:0 -2px 10px #00000080}.footer .footer-container{display:flex;flex-direction:column;gap:2rem}.footer .footer-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:1rem;padding-bottom:1.5rem;border-bottom:1px solid rgba(209,209,214,.2)}.footer .footer-top h2{font-size:1.8rem;margin:0;color:#d1d1d6;font-weight:600;letter-spacing:1.5px}.footer .footer-top .footer-nav ul{list-style:none;display:flex;gap:1.5rem;padding:0;margin:0}.footer .footer-top .footer-nav ul li a{color:#d1d1d6;text-decoration:none;font-weight:500;transition:color .3s}.footer .footer-top .footer-nav ul li a:hover{color:#0a84ff}.footer .footer-top .footer-social{display:flex;gap:1rem}.footer .footer-top .footer-social a{display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;border:1px solid #d1d1d6;border-radius:50%;color:#d1d1d6;text-decoration:none;font-size:1.5rem;transition:all .3s}.footer .footer-top .footer-social a:hover{color:#0a84ff;border-color:#0a84ff}.footer .footer-bottom{text-align:center;padding-top:1rem;border-top:1px solid rgba(209,209,214,.2)}.footer .footer-bottom p{margin:.5rem 0}.footer .footer-bottom p a{color:#d1d1d6;text-decoration:none;transition:color .3s}.footer .footer-bottom p a:hover{color:#0a84ff}@media (max-width: 768px){.footer .footer-top{flex-direction:column;text-align:center}.footer .footer-top .footer-nav ul{flex-direction:column;gap:.75rem}.footer .footer-top .footer-social{flex-direction:row;justify-content:center;gap:.75rem}}
-</style></head> <body> <header> <div class="container"> <a href="" class="logo"> <img src="logo.png" alt="Logo"> </a> <button class="menu-toggle" aria-label="Toggle Navigation"> <span class="menu-icon">☰</span> <span class="menu-text">Menu</span> </button> <nav class="nav"> <ul> <li><a href="">Home</a></li> <li><a href="about">About</a></li> <li><a href="music">Music</a></li> <li><a href="store">Store</a></li> <li><a href="contact">Contact</a></li> </ul> </nav> </div> </header> <script client:load>
+<!DOCTYPE html><html lang="en"> <head><base href="/raverevolutionbeats/"><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><link rel="icon" type="image/svg+xml" href="/favicon.svg"><title>Rave Revolution Beats</title><!-- CDN de Font Awesome --><script src="https://kit.fontawesome.com/5e60daf075.js" crossorigin="anonymous"></script><link rel="stylesheet" href="/raverevolutionbeats/_astro/_slug_.BcsHc6Vv.css">
+<link rel="stylesheet" href="/raverevolutionbeats/_astro/about.z7GWMUFG.css"></head> <body> <header> <div class="container"> <a href="" class="logo"> <img src="logo.png" alt="Logo"> </a> <button class="menu-toggle" aria-label="Toggle Navigation"> <span class="menu-icon">☰</span> <span class="menu-text">Menu</span> </button> <nav class="nav"> <ul> <li><a href="">Home</a></li> <li><a href="about">About</a></li> <li><a href="music">Music</a></li> <li><a href="store">Store</a></li> <li><a href="subscribe" class="subscribe-link">Subscribe</a></li> <li><a href="contact">Contact</a></li> </ul> </nav> </div> </header> <script client:load>
   const toggleButton = document.querySelector('.menu-toggle');
   const navList = document.querySelector('nav ul');
   toggleButton.addEventListener('click', () => {
     navList.classList.toggle('open');
   });
-</script> <main>  <section class="product-detail"> <div class="container">  <div class="product-header"> <h1 class="product-title">Women’s t-shirt</h1>  </div> <div class="product-flex"> <div class="image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#000000" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#000080" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#800080" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#FF0000" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#4169E1" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#F77F00" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#36454F" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#008000" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background-color:#F3C5D5" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background-color:#A9A9A9" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background-color:#FFFFFF" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> </div> <div class="price-display"> <span id="selected-price"> 17,00 € </span> </div> <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button> <!-- Mensaje de confirmación --> <div id="cart-message" style="display: none; margin-top: 10px; color: green; font-weight: bold;">
-Producto añadido al carrito!
+</script> <main>  <section class="product-detail"> <div class="container">  <div class="product-header"> <h1 class="product-title">Women’s t-shirt</h1>  </div> <div class="product-flex"> <div class="image-gallery"> <div class="main-image-container"> <img id="main-product-image" src="https://files.cdn.printful.com/files/b29/b29addf297e6415955436a6e91c8bf63_preview.png" alt="Women’s t-shirt"> </div> <div class="thumbnails-container"> <div id="image-thumbnails" class="thumbnails-grid"> <!-- Las miniaturas se generarán dinámicamente via JavaScript --> </div> </div> </div> <aside class="options-sidebar"> <div class="option-group colors"> <h2>Color</h2> <div class="color-options"> <div class="color-swatch" data-color="Black" style="background-color:#090909" title="Black"></div><div class="color-swatch" data-color="Navy" style="background-color:#16263f" title="Navy"></div><div class="color-swatch" data-color="Purple" style="background-color:#4a1c7d" title="Purple"></div><div class="color-swatch" data-color="Red" style="background-color:#ff1b1b" title="Red"></div><div class="color-swatch" data-color="Royal" style="background-color:#2665cc" title="Royal"></div><div class="color-swatch" data-color="Heliconia" style="background-color:#e33f7a" title="Heliconia"></div><div class="color-swatch" data-color="Charcoal" style="background-color:#74716b" title="Charcoal"></div><div class="color-swatch" data-color="Irish Green" style="background-color:#00b365" title="Irish Green"></div><div class="color-swatch" data-color="Azalea" style="background-color:#ff94ba" title="Azalea"></div><div class="color-swatch" data-color="RS Sport Grey" style="background-color:#bebbba" title="RS Sport Grey"></div><div class="color-swatch" data-color="White" style="background-color:#ffffff" title="White"></div> </div> </div> <div class="option-group sizes"> <h2>Size</h2> <div class="size-options"> <div class="size-option" data-size="S"> S </div><div class="size-option" data-size="M"> M </div><div class="size-option" data-size="L"> L </div><div class="size-option" data-size="XL"> XL </div><div class="size-option" data-size="2XL"> 2XL </div> </div> </div> <div class="price-display"> <span id="selected-price"> 17,00 € </span> </div> <!-- Status indicator --> <div id="selection-status" style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; text-align: center; color: #fff; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.2);">
+Please select color and size
+</div> <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button> <!-- Mensaje de confirmación --> <div id="cart-message" style="display: none; margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border-radius: 4px; text-align: center;">
+✅ Producto añadido al carrito!
 </div> </aside> </div>  <script id="variants-data" type="application/json">{JSON.stringify((product.variants && product.variants.length) ? product.variants : (product.sync_variants || []))}</script> <script id="product-data" type="application/json">{JSON.stringify(product)}</script>  </div> </section> <div id="modal" class="modal"> <span id="modal-close" class="modal-close">&times;</span> <img class="modal-content" id="modal-image" alt="Enlarged Image"> </div> <script type="module">
     document.addEventListener("DOMContentLoaded", () => {
       // Configuración del modal
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
-  
-      // Recuperar variantes desde la etiqueta "variants-data"
+      
+      // Recuperar variantes y producto desde JSON
       const variantsDataEl = document.getElementById("variants-data");
-      let variants = [];
-      if (variantsDataEl) {
-        try {
-          variants = JSON.parse(variantsDataEl.textContent.trim());
-          console.log("Variantes parseadas desde 'variants-data' (length:", variants.length, "):", variants);
-        } catch (e) {
-          console.error("Error parseando JSON de variantes", e);
-        }
-      }
-  
-      // Recuperar producto desde la etiqueta "product-data"
-      let product = {};
       const productDataEl = document.getElementById("product-data");
-      if (productDataEl) {
-        try {
-          product = JSON.parse(productDataEl.textContent.trim());
-          console.log("Producto parseado desde 'product-data':", product);
-        } catch (e) {
-          console.error("Error parseando JSON de producto", e);
-        }
+      
+      let variants = [];
+      let product = {};
+      try {
+        variants = variantsDataEl ? JSON.parse(variantsDataEl.textContent.trim()) : [];
+        product = productDataEl ? JSON.parse(productDataEl.textContent.trim()) : {};
+      } catch (e) {
+        // Error parsing JSON data
       }
-  
-      // Fallback: si variants es vacío, usar product.sync_variants si existe.
-      if (!variants.length && product.sync_variants && product.sync_variants.length) {
+
+      // Fallback
+      if (!variants.length && product.sync_variants) {
         variants = product.sync_variants;
-        console.log("Usando product.sync_variants como fallback. Variantes (length:", variants.length, "):", variants);
       }
-  
-      console.log("Producto cargado:", product, "Variantes finales (length:", variants.length, "):", variants);
-  
+      
+      // Calculate unique colors and sizes
+      let uniqueColorVariants = [];
+      let uniqueSizes = [];
+      if (variants?.length) {
+        const colorDict = {};
+        const sizeSet = new Set();
+        variants.forEach(v => {
+          if (v.color) {
+            const key = v.color.trim().toLowerCase();
+            if (!colorDict[key]) colorDict[key] = v;
+          }
+          if (v.size) sizeSet.add(v.size.trim());
+        });
+        uniqueColorVariants = Object.values(colorDict);
+        uniqueSizes = Array.from(sizeSet);
+      }
+
       let selectedColor = null, selectedSize = null;
-  
+
+      // FUNCIONES AUXILIARES
+      const findVariant = (color, size) => {
+        return variants.find(v => {
+          const variantColor = (v.color || "").trim().toLowerCase();
+          const variantSize = (v.size || "").trim().toLowerCase();
+          const searchColor = (color || "").trim().toLowerCase();
+          const searchSize = (size || "").trim().toLowerCase();
+          
+          return variantColor === searchColor && variantSize === searchSize;
+        });
+      };
+
+      const getVariantImageUrl = (variant) => {
+        if (variant.files && variant.files.length > 0) {
+          const previewFile = variant.files.find(f => f.type === 'preview');
+          if (previewFile && previewFile.preview_url) {
+            return previewFile.preview_url;
+          }
+          if (variant.files[0] && variant.files[0].preview_url) {
+            return variant.files[0].preview_url;
+          }
+        }
+        if (variant.thumbnail_url) {
+          return variant.thumbnail_url;
+        }
+        return null;
+      };
+
+      // GALERÍA DE IMÁGENES
+      const generateImageGallery = () => {
+        const thumbnailsContainer = document.getElementById("image-thumbnails");
+        if (!thumbnailsContainer) return;
+        
+        const uniqueImages = new Map();
+        
+        // Agregar imagen principal del producto
+        if (product.thumbnail_url) {
+          uniqueImages.set(product.thumbnail_url, {
+            url: product.thumbnail_url,
+            label: 'Principal',
+            color: 'default'
+          });
+        }
+        
+        // Agregar imágenes de TODAS las variantes
+        variants.forEach(variant => {
+          const imageUrl = getVariantImageUrl(variant);
+          if (imageUrl && !uniqueImages.has(imageUrl)) {
+            uniqueImages.set(imageUrl, {
+              url: imageUrl,
+              label: variant.color || 'Variante',
+              color: variant.color || 'default'
+            });
+          }
+        });
+        
+        // Generar thumbnails solo si hay más de una imagen
+        if (uniqueImages.size > 1) {
+          thumbnailsContainer.innerHTML = '';
+          uniqueImages.forEach((image, url) => {
+            const thumbnail = document.createElement('img');
+            thumbnail.src = url;
+            thumbnail.alt = image.label;
+            thumbnail.className = 'thumbnail';
+            thumbnail.title = image.label;
+            thumbnail.dataset.color = image.color;
+            
+            // Marcar como activa la imagen principal al inicio
+            if (url === product.thumbnail_url) {
+              thumbnail.classList.add('active');
+            }
+            
+            thumbnail.addEventListener('click', () => {
+              updateMainImage(url);
+              updateActiveThumbnail(thumbnail);
+            });
+            
+            thumbnailsContainer.appendChild(thumbnail);
+          });
+        } else {
+          // Si solo hay una imagen, ocultar el contenedor de thumbnails
+          thumbnailsContainer.style.display = 'none';
+        }
+      };
+
+      const updateMainImage = (imageUrl) => {
+        const mainImg = document.getElementById("main-product-image");
+        if (mainImg && imageUrl && imageUrl !== mainImg.src) {
+          mainImg.style.opacity = "0.5";
+          mainImg.style.filter = "blur(2px)";
+          
+          const newImg = new Image();
+          newImg.onload = () => {
+            mainImg.src = imageUrl;
+            mainImg.style.opacity = "1";
+            mainImg.style.filter = "none";
+          };
+          newImg.onerror = () => {
+            mainImg.style.opacity = "1";
+            mainImg.style.filter = "none";
+          };
+          newImg.src = imageUrl;
+        }
+      };
+
+      const updateActiveThumbnail = (activeThumbnail) => {
+        document.querySelectorAll('.thumbnail').forEach(thumb => {
+          thumb.classList.remove('active');
+        });
+        activeThumbnail.classList.add('active');
+      };
+
+      // ACTUALIZACIÓN DE UI
       const updateUI = () => {
         try {
-          console.log("updateUI INICIO: color:", selectedColor, "talla:", selectedSize);
           const priceEl = document.getElementById("selected-price");
           const imgEl = document.getElementById("main-product-image");
-          console.log("updateUI: Elementos UI: priceEl:", priceEl, "imgEl:", imgEl);
-          console.log("updateUI: Variantes disponibles (length:", variants.length, "):", variants);
-          if (!variants.length) { 
-            console.log("No hay variantes disponibles");
-            return; 
-          }
-  
+          
+          if (!variants.length) return;
+          
           if (selectedColor && selectedSize) {
-            console.log("Buscando variante para:", selectedColor, selectedSize);
-            const variant = variants.find(v => {
-              const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-              const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-              console.log("updateUI - Comparando variante: color:", variantColor, "talla:", variantSize);
-              return variantColor === selectedColor.trim().toLowerCase() &&
-                     variantSize === selectedSize.trim().toLowerCase();
-            });
-            console.log("updateUI - Resultado de búsqueda:", variant);
-            if (variant && imgEl && priceEl) {
-              console.log("updateUI - Variante encontrada, actualizando precio e imagen.");
-              priceEl.textContent = new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: variant.currency || "EUR"
-              }).format(parseFloat(variant.retail_price));
-              imgEl.src = variant.thumbnail_url;
+            const variant = findVariant(selectedColor, selectedSize);
+            
+            if (variant) {
+              // Variante válida - actualizar precio e imagen
+              if (priceEl) {
+                const newPrice = new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: variant.currency || "EUR"
+                }).format(parseFloat(variant.retail_price || variant.price || "0"));
+                priceEl.textContent = newPrice;
+                priceEl.style.color = "";
+              }
+              
+              // Actualizar imagen
+              if (imgEl) {
+                const newImageUrl = getVariantImageUrl(variant);
+                if (newImageUrl) {
+                  updateMainImage(newImageUrl);
+                  
+                  // Actualizar thumbnail activo
+                  const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
+                  if (matchingThumbnail) {
+                    updateActiveThumbnail(matchingThumbnail);
+                  }
+                }
+              }
             } else {
-              console.log("updateUI - No se encontró variante específica, usando precio mínimo.");
+              // Combinación no válida
+              if (priceEl) {
+                const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+                priceEl.textContent = new Intl.NumberFormat("es-ES", {
+                  style: "currency",
+                  currency: variants[0].currency || "EUR"
+                }).format(lowestPrice);
+                priceEl.style.color = "#ff6b6b";
+                setTimeout(() => { priceEl.style.color = ""; }, 2000);
+              }
+            }
+          } else {
+            // Selección incompleta
+            if (priceEl) {
               const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
               priceEl.textContent = new Intl.NumberFormat("es-ES", {
                 style: "currency",
                 currency: variants[0].currency || "EUR"
               }).format(lowestPrice);
+              priceEl.style.color = "";
             }
-          } else {
-            console.log("updateUI - Combinación incompleta, mostrando precio mínimo.");
-            const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-            priceEl.textContent = new Intl.NumberFormat("es-ES", {
-              style: "currency",
-              currency: variants[0].currency || "EUR"
-            }).format(lowestPrice);
-          }
-  
+          }          // BOTÓN Y STATUS - Se actualiza según la selección
           const addBtn = document.getElementById("add-to-cart");
-          if (selectedColor && selectedSize) {
-            addBtn.disabled = false;
-            addBtn.style.opacity = 1;
-          } else {
-            addBtn.disabled = true;
-            addBtn.style.opacity = 0.5;
+          const statusEl = document.getElementById("selection-status");
+          
+          if (addBtn && statusEl) {
+            if (selectedColor && selectedSize) {
+              const variant = findVariant(selectedColor, selectedSize);
+              
+              if (variant) {
+                // Combinación válida - activar botón
+                addBtn.disabled = false;
+                addBtn.style.opacity = "1";
+                addBtn.textContent = "Add to Cart";
+                addBtn.style.background = "";
+                
+                statusEl.innerHTML = `✅ Selected: ${selectedColor} - ${selectedSize}`;
+                statusEl.style.background = "rgba(76, 175, 80, 0.2)";
+                statusEl.style.borderColor = "rgba(76, 175, 80, 0.5)";
+                statusEl.style.color = "#4CAF50";
+              } else {
+                // Combinación no válida - desactivar
+                addBtn.disabled = true;
+                addBtn.style.opacity = "0.6";
+                addBtn.textContent = "Combination Not Available";
+                addBtn.style.background = "#ff6b6b";
+                
+                statusEl.innerHTML = `❌ Combination not available: ${selectedColor} - ${selectedSize}`;
+                statusEl.style.background = "rgba(255, 107, 107, 0.2)";
+                statusEl.style.borderColor = "rgba(255, 107, 107, 0.5)";
+                statusEl.style.color = "#ff6b6b";
+              }
+            } else {
+              // Sin color o talla - desactivar
+              addBtn.disabled = true;
+              addBtn.style.opacity = "0.6";
+              addBtn.textContent = "Select Color and Size";
+              addBtn.style.background = "#666";
+              
+              let statusText = "Please select: ";
+              if (!selectedColor && !selectedSize) {
+                statusText += "color and size";
+              } else if (!selectedColor) {
+                statusText += "color";
+              } else {
+                statusText += "size";
+              }
+              
+              statusEl.innerHTML = statusText;
+              statusEl.style.background = "rgba(255, 255, 255, 0.1)";
+              statusEl.style.borderColor = "rgba(255, 255, 255, 0.2)";
+              statusEl.style.color = "#fff";
+            }
           }
-          console.log("updateUI FINALIZADO: color:", selectedColor, "talla:", selectedSize);
         } catch (error) {
-          console.error("Error en updateUI:", error);
-        }
-      };
-  
-      // Función para agregar al carrito.
+          // Error en updateUI
+        }      };
+
+      // FUNCIONALIDAD DEL CARRITO
       const addToCart = () => {
-        if (!selectedColor || !selectedSize) return;
-  
-        const variant = variants.find(v => {
-          const variantColor = v.color ? v.color.trim().toLowerCase() : "";
-          const variantSize = v.size ? v.size.trim().toLowerCase() : "";
-          return variantColor === selectedColor.trim().toLowerCase() &&
-                 variantSize === selectedSize.trim().toLowerCase();
-        });
-  
-        if (!variant) {
-          alert("La combinación seleccionada no existe.");
+        // Verificar que hay color y talla seleccionados
+        if (!selectedColor || !selectedSize) {
+          alert("Por favor selecciona color y talla.");
           return;
         }
-  
+
+        const variant = findVariant(selectedColor, selectedSize);
+        if (!variant) {
+          alert("La combinación seleccionada no está disponible.");
+          return;
+        }
+
         const cartItem = {
-          productId: productId,
+          productId: product.id,
           variantId: variant.id,
-          name: document.querySelector(".product-title")?.textContent || "",
+          name: product.name || "",
           color: variant.color,
           size: variant.size,
-          price: parseFloat(variant.retail_price || variant.price),
+          price: parseFloat(variant.retail_price || variant.price || "0"),
           quantity: 1,
-          thumbnail: variant.thumbnail_url,
+          thumbnail: getVariantImageUrl(variant) || product.thumbnail_url,
           currency: variant.currency || "EUR"
         };
-  
-        console.log("addToCart - Añadiendo al carrito:", cartItem);
-  
+
+        // Gestión del localStorage
         let cart = [];
         try {
-          cart = JSON.parse(localStorage.getItem("cart") || "[]");
-          console.log("addToCart - Carrito previo:", cart);
+          const existingCart = localStorage.getItem("cart");
+          cart = existingCart ? JSON.parse(existingCart) : [];
         } catch (e) {
-          console.error("Error parseando carrito:", e);
+          cart = [];
         }
-  
-        const existingIndex = cart.findIndex(item => item.variantId === cartItem.variantId);
+
+        // Buscar si ya existe este producto con la misma variante
+        const existingIndex = cart.findIndex(item => 
+          item.productId === cartItem.productId && 
+          item.variantId === cartItem.variantId
+        );
+        
         if (existingIndex > -1) {
+          // Si existe, incrementar cantidad
           cart[existingIndex].quantity += 1;
         } else {
+          // Si no existe, agregar nuevo
           cart.push(cartItem);
         }
-  
+
+        // Guardar en localStorage
         localStorage.setItem("cart", JSON.stringify(cart));
-        console.log("addToCart - Carrito actualizado:", cart);
-  
+
+        // Mostrar mensaje de confirmación
         const cartMessageEl = document.getElementById("cart-message");
         if (cartMessageEl) {
           cartMessageEl.style.display = "block";
+          cartMessageEl.style.animation = "fadeInOut 3s ease-in-out";
           setTimeout(() => {
             cartMessageEl.style.display = "none";
           }, 3000);
         }
+
+        // Disparar evento para actualizar contador del carrito si existe
+        window.dispatchEvent(new CustomEvent('cartUpdated', { 
+          detail: { 
+            cartLength: cart.length,
+            totalItems: cart.reduce((sum, item) => sum + item.quantity, 0)
+          }
+        }));
       };
-  
-      // Eventos para selección de color.
+
+      // EVENT LISTENERS
       document.querySelectorAll(".color-swatch").forEach(swatch => {
         swatch.addEventListener("click", () => {
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
           swatch.classList.add("selected");
           selectedColor = swatch.dataset.color;
-          console.log("Color seleccionado:", selectedColor);
+          
+          // Actualizar imagen principal según el color seleccionado
+          const colorVariant = variants.find(v => v.color && v.color.trim().toLowerCase() === selectedColor.trim().toLowerCase());
+          if (colorVariant) {
+            const newImageUrl = getVariantImageUrl(colorVariant);
+            if (newImageUrl) {
+              updateMainImage(newImageUrl);
+              // Actualizar thumbnail activo
+              const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
+              if (matchingThumbnail) {
+                updateActiveThumbnail(matchingThumbnail);
+              }
+            }          }
+          
           updateUI();
         });
       });
-  
-      // Eventos para selección de talla.
+
       document.querySelectorAll(".size-option").forEach(opt => {
         opt.addEventListener("click", () => {
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
-          opt.classList.add("selected");
-          selectedSize = opt.dataset.size;
-          console.log("Talla seleccionada:", selectedSize);
+          opt.classList.add("selected");          selectedSize = opt.dataset.size;
           updateUI();
         });
       });
-  
-      updateUI();
-  
-      document.getElementById("add-to-cart").addEventListener("click", () => {
-        console.log("Botón 'Add to Cart' presionado");
-        addToCart();
-      });
-  
+
+      document.getElementById("add-to-cart").addEventListener("click", addToCart);
+
+      // MODAL DE IMAGEN
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
       const mainImg = document.getElementById("main-product-image");
+      
       if (mainImg) {
         mainImg.addEventListener("click", () => {
           modal.style.display = "flex";
           modalImg.src = mainImg.src;
         });
       }
-  
+
       if (modalCloseElem) {
         modalCloseElem.addEventListener("click", () => {
           modal.style.display = "none";
         });
       }
-  
+
       if (modal) {
         modal.addEventListener("click", (e) => {
           if (e.target === modal) {
             modal.style.display = "none";
           }
         });
-      }
+      }      // INICIALIZACIÓN
+      generateImageGallery();
+      updateUI(); // Inicializar estado del botón
     });
-  </script>  </main> <footer class="footer"> <div class="container footer-container"> <div class="footer-top"> <!-- Puedes decidir quitar el título si ya cuentas con el logo en el header --> <h2>Rave Revolution Beats</h2> <nav class="footer-nav"> <ul> <li><a href="">Home</a></li> <li><a href="about">About</a></li> <li><a href="music">Music</a></li> <li><a href="store">Store</a></li> <li><a href="contact">Contact</a></li> </ul> </nav> <div class="footer-social"> <a href="https://www.youtube.com/@RaveRevolutionBeats" target="_blank" rel="noopener"> <i class="fa-brands fa-youtube"></i> </a> <a href="https://www.instagram.com/raverevolutionbeats" target="_blank" rel="noopener"> <i class="fa-brands fa-instagram"></i> </a> <a href="https://www.tiktok.com/@raverevolutionbeats" target="_blank" rel="noopener"> <i class="fa-brands fa-tiktok"></i> </a> <a href="https://linktr.ee/raverevolutionbeats" target="_blank" rel="noopener"> <i class="fa-solid fa-link"></i> </a> <a href="https://www.threads.com/@raverevolutionbeats" target="_blank" rel="noopener"> <!-- No existe un icono oficial para Threads en Font Awesome, así que usamos uno alternativo --> <i class="fa-brands fa-threads"></i> </a> <a href="https://x.com/RaveRevolutionB" target="_blank" rel="noopener"> <i class="fa-brands fa-x-twitter"></i> </a> </div> </div> <div class="footer-bottom"> <p>&copy; 2025 Rave Revolution Beats. All Rights Reserved.</p> <p> <a href="/privacy">Privacy Policy</a> | <a href="/terms">Terms of Service</a> </p> </div> </div> </footer> </body></html>
+  </script>  </main> <footer class="footer"> <div class="footer-background"> <div class="bg-gradient"></div> <div class="bg-particles"></div> </div> <div class="container"> <div class="footer-content"> <div class="footer-main"> <div class="footer-brand"> <h2>Rave Revolution Beats</h2> <p>Underground electronic music that moves your soul. Join the revolution and feel the beat.</p> </div> <div class="footer-links"> <div class="link-group"> <h3>Navigate</h3> <ul> <li><a href="/">Home</a></li> <li><a href="/about">About</a></li> <li><a href="/music">Music</a></li> <li><a href="/store">Store</a></li> <li><a href="/contact">Contact</a></li> </ul> </div> <div class="link-group"> <h3>Community</h3> <ul> <li><a href="/subscribe">Subscribe</a></li> <li><a href="https://linktr.ee/raverevolutionbeats" target="_blank">All Links</a></li> <li><a href="mailto:contact@raverevolutionbeats.com">Email Us</a></li> </ul> </div> <div class="link-group"> <h3>Music</h3> <ul> <li><a href="https://open.spotify.com/intl-es/artist/2Fu7NLytib1zNObXU0YUC1" target="_blank">Spotify</a></li> <li><a href="https://music.apple.com/es/artist/rave-revolution-beats/1807818727" target="_blank">Apple Music</a></li> <li><a href="https://www.soundcloud.com/rave-revolution-beats" target="_blank">SoundCloud</a></li> <li><a href="https://www.beatport.com/es/artist/rave-revolution-beats/1305790" target="_blank">Beatport</a></li> </ul> </div> </div> </div> <div class="footer-social"> <div class="social-header"> <h3>Follow the Revolution</h3> <p>Connect with us everywhere</p> </div> <div class="social-links"> <a href="https://www.youtube.com/@RaveRevolutionBeats" target="_blank" rel="noopener" class="social-link youtube"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"></path> </svg> <span>YouTube</span> </a> <a href="https://www.instagram.com/raverevolutionbeats" target="_blank" rel="noopener" class="social-link instagram"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"></path> </svg> <span>Instagram</span> </a> <a href="https://www.tiktok.com/@raverevolutionbeats" target="_blank" rel="noopener" class="social-link tiktok"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M12.525.02c1.31-.02 2.61-.01 3.91-.02.08 1.53.63 3.09 1.75 4.17 1.12 1.11 2.7 1.62 4.24 1.79v4.03c-1.44-.05-2.89-.35-4.2-.97-.57-.26-1.1-.59-1.62-.93-.01 2.92.01 5.84-.02 8.75-.08 1.4-.54 2.79-1.35 3.94-1.31 1.92-3.58 3.17-5.91 3.21-1.43.08-2.86-.31-4.08-1.03-2.02-1.19-3.44-3.37-3.65-5.71-.02-.5-.03-1-.01-1.49.18-1.9 1.12-3.72 2.58-4.96 1.66-1.44 3.98-2.13 6.15-1.72.02 1.48-.04 2.96-.04 4.44-.99-.32-2.15-.23-3.02.37-.63.41-1.11 1.04-1.36 1.75-.21.51-.15 1.07-.14 1.61.24 1.64 1.82 3.02 3.5 2.87 1.12-.01 2.19-.66 2.77-1.61.19-.33.4-.67.41-1.06.1-1.79.06-3.57.07-5.36.01-4.03-.01-8.05.02-12.07z"></path> </svg> <span>TikTok</span> </a> <a href="https://www.threads.net/@raverevolutionbeats" target="_blank" rel="noopener" class="social-link threads"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M12.186 24h-.007c-3.581-.024-6.334-1.205-8.184-3.509C2.35 18.44 1.5 15.586 1.5 12.01c0-3.576.85-6.43 2.495-8.481C5.845 1.225 8.598.044 12.179.02c3.581.024 6.334 1.205 8.184 3.509C21.65 5.58 22.5 8.434 22.5 12.01c0 3.576-.85 6.43-2.495 8.481C18.155 22.775 15.402 23.956 11.821 23.98h.365zM12.176 2.574c-2.993.02-5.263.996-6.75 2.902C4.439 6.978 3.75 9.331 3.75 12.01s.689 5.032 1.676 6.534c1.487 1.906 3.757 2.882 6.75 2.902 2.993-.02 5.263-.996 6.75-2.902.987-1.502 1.676-3.855 1.676-6.534s-.689-5.032-1.676-6.534c-1.487-1.906-3.757-2.882-6.75-2.902z"></path> </svg> <span>Threads</span> </a> <a href="https://x.com/RaveRevolutionB" target="_blank" rel="noopener" class="social-link twitter"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"></path> </svg> <span>Twitter</span> </a> <a href="https://linktr.ee/raverevolutionbeats" target="_blank" rel="noopener" class="social-link linktree"> <svg viewBox="0 0 24 24" fill="currentColor"> <path d="M7.953 15.066c-.08.163-.08.324-.08.486v.649c0 1.297.973 2.435 2.27 2.435 1.297 0 2.27-1.138 2.27-2.435v-.649c0-.162 0-.323-.081-.486L9.864 11.1a.905.905 0 0 0-.81-.486.905.905 0 0 0-.811.486l-2.29 3.966zm8.094 0c-.081.163-.081.324-.081.486v.649c0 1.297.973 2.435 2.27 2.435 1.297 0 2.27-1.138 2.27-2.435v-.649c0-.162 0-.323-.08-.486L17.958 11.1a.905.905 0 0 0-.81-.486.905.905 0 0 0-.811.486l-2.29 3.966zM12 7.027l2.27-3.958a.905.905 0 0 0-.81-1.459.905.905 0 0 0-.811.486L12 3.423 11.351 2.096a.905.905 0 0 0-.81-.486.905.905 0 0 0-.811 1.459L12 7.027z"></path> </svg> <span>All Links</span> </a> </div> </div> </div> <div class="footer-bottom"> <div class="footer-bottom-content"> <p>&copy; 2025 Rave Revolution Beats. All Rights Reserved.</p> <div class="footer-bottom-links"> <span>Made with ❤️ for the underground scene</span> </div> </div> </div> </div> </footer> </body></html>
