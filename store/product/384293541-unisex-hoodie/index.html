@@ -229,8 +229,6 @@ const productId = "384293541";
         // Recopilar todas las imágenes disponibles
         allAvailableImages = collectAllImages();
         
-        console.log("Imágenes disponibles:", allAvailableImages.length);
-        
         // Establecer imagen principal inicial
         if (allAvailableImages.length > 0) {
           // Usar la imagen del producto principal si está disponible
@@ -413,14 +411,6 @@ const productId = "384293541";
           }
         }
         
-        console.log('Adding to cart:', {
-          variantId: variant.id,
-          color: variant.color,
-          selectedColor: selectedColor,
-          thumbnailUrl: thumbnailUrl,
-          currentMainImage: currentMainImage?.url
-        });
-
         const cartItem = {
           productId: productId,
           variantId: variant.id,
