@@ -9,11 +9,10 @@ const baseUrl = import.meta.env.BASE_URL || '/';
     <div class="bg-blur"></div>
     <div class="bg-gradient"></div>
   </div>
-  
-  <div class="container">
+    <div class="container">
     <a href={baseUrl} class="logo">
-      <img src={`${baseUrl}logo.png`} alt="Rave Revolution Beats" />
-      <span class="logo-text">Rave Revolution</span>
+      <img src="/raverevolutionbeats/logo.png" alt="Rave Revolution Beats" />
+      <span class="logo-text">Rave Revolution Beats</span>
     </a>
       <button class="menu-toggle" aria-label="Toggle Navigation">
       <div class="hamburger">
@@ -50,10 +49,7 @@ const baseUrl = import.meta.env.BASE_URL || '/';
 
 <script>  const toggleButton = document.querySelector('.menu-toggle');
   const nav = document.querySelector('.nav');
-  const navList = document.querySelector('nav ul');
   const header = document.querySelector('.header');
-  const logoImg = document.querySelector('.logo img');
-  const logoText = document.querySelector('.logo-text');
   const cartToggle = document.querySelector('.cart-toggle');
   
   // Toggle mobile menu
@@ -91,14 +87,5 @@ const baseUrl = import.meta.env.BASE_URL || '/';
     if (!nav?.contains(target) && !toggleButton?.contains(target)) {
       nav?.classList.remove('open');
       toggleButton?.classList.remove('active');
-    }
-  });
-  
-  // Show text fallback if logo image fails to load
-  logoImg?.addEventListener('error', () => {
-    const logoTextElement = logoText as HTMLElement;
-    if (logoTextElement) {
-      logoTextElement.style.display = 'block';
-    }
-  });
+    }  });
 </script>
