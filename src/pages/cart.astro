@@ -77,8 +77,6 @@ const baseUrl = '/raverevolutionbeats/';
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
-    console.log('Cart page loading...');
-    
     const cartItemsList = document.getElementById('cart-items-list');
     const emptyCartMessage = document.getElementById('empty-cart-message');
     const cartSubtotal = document.getElementById('cart-subtotal');
@@ -107,7 +105,6 @@ const baseUrl = '/raverevolutionbeats/';
     }
 
     function updateCartPage() {
-      console.log('Updating cart page...');
       const cart = getCart();
       const isEmpty = cart.length === 0;
       
@@ -213,6 +210,5 @@ const baseUrl = '/raverevolutionbeats/';
 
     // Initial load
     updateCartPage();
-    console.log('Cart page initialized successfully');
   });
 </script>

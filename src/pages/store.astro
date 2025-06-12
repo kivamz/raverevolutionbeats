@@ -28,29 +28,55 @@ interface ProductDetail extends Product {
 const PRINTFUL_API_BASE = import.meta.env.PRINTFUL_API_BASE;
 const PRINTFUL_ACCESS_TOKEN = import.meta.env.PRINTFUL_ACCESS_TOKEN;
 
-if (!PRINTFUL_ACCESS_TOKEN) {
-  throw new Error("Printful access token is not defined. Revisa tu archivo .env.");
-}
+// Fallback products for when API is not available
+const fallbackProducts = [
+  {
+    id: 384392155,
+    name: "Short Unisex T-Shirt",
+    description: "Comfortable unisex t-shirt perfect for any occasion.",
+    thumbnail_url: "https://via.placeholder.com/300x300/000/fff?text=T-Shirt"
+  },
+  {
+    id: 384293541,
+    name: "Unisex Hoodie", 
+    description: "Cozy hoodie for music lovers.",
+    thumbnail_url: "https://via.placeholder.com/300x300/000/fff?text=Hoodie"
+  },
+  {
+    id: 384293385,
+    name: "Women's T-Shirt",
+    description: "Stylish women's t-shirt with perfect fit.",
+    thumbnail_url: "https://via.placeholder.com/300x300/000/fff?text=Women+Tee"
+  }
+];
 
 let products: Product[] = [];
 
-// Llamada al endpoint para obtener la lista de productos.
-const endpoint = `${PRINTFUL_API_BASE}store/products`;
+if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) {
+  console.warn("Missing Printful API credentials - using fallback products");
+  products = fallbackProducts;
+} else {
+  // Llamada al endpoint para obtener la lista de productos.
+  const endpoint = `${PRINTFUL_API_BASE}store/products`;
 
-try {
-  const response = await fetch(endpoint, {
-    headers: {
-      'Authorization': `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
-      'Content-Type': 'application/json'
+  try {
+    const response = await fetch(endpoint, {
+      headers: {
+        'Authorization': `Bearer ${PRINTFUL_ACCESS_TOKEN}`,
+        'Content-Type': 'application/json'
+      }
+    });
+
+    if (!response.ok) {
+      console.error("Error en respuesta de la API:", response.status);
+      products = fallbackProducts;    } else {
+      const productsData = await response.json();
+      products = productsData.result || fallbackProducts;
     }
-  });  if (!response.ok) {
-    // Error en respuesta de la API
-  } else {
-    const productsData = await response.json();
-    products = productsData.result || [];
+  } catch (error) {
+    console.error("Error obteniendo productos:", error);
+    products = fallbackProducts;
   }
-} catch (error) {
-  // Error obteniendo productos
 }
 
 let detailedProducts: ProductDetail[] = [];

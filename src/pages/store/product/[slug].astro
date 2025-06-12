@@ -28,10 +28,14 @@ export async function getStaticPaths() {
       
   const PRINTFUL_API_BASE = import.meta.env.PRINTFUL_API_BASE;
   const PRINTFUL_ACCESS_TOKEN = import.meta.env.PRINTFUL_ACCESS_TOKEN;
-  
-  if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) {
-    console.warn("Missing Printful API credentials for getStaticPaths");
-    return [];
+    if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) {
+    console.warn("Missing Printful API credentials for getStaticPaths - using fallback");
+    // Return fallback paths for development/production without API
+    return [
+      { params: { slug: "384392155-short-unisex-t-shirt" } },
+      { params: { slug: "384293541-unisex-hoodie" } },
+      { params: { slug: "384293385-women-s-t-shirt" } }
+    ];
   }
   
   try {
@@ -41,10 +45,14 @@ export async function getStaticPaths() {
         "Content-Type": "application/json"
       }
     });
-    
-    if (!response.ok) {
+      if (!response.ok) {
       console.error("Failed to fetch products for getStaticPaths:", response.status);
-      return [];
+      // Return fallback paths instead of empty array
+      return [
+        { params: { slug: "384392155-short-unisex-t-shirt" } },
+        { params: { slug: "384293541-unisex-hoodie" } },
+        { params: { slug: "384293385-women-s-t-shirt" } }
+      ];
     }
     
     const data = await response.json();
@@ -54,15 +62,21 @@ export async function getStaticPaths() {
         const slug = `${product.id}-${slugify(product.name)}`;
         return { params: { slug } };
       });
-      console.log(`Generated ${paths.length} product paths for static generation`);
-      return paths;
-    } else {
-      console.warn("No products found for getStaticPaths");
-      return [];
-    }
-  } catch (error) {
+      return paths;    } else {
+      console.warn("No products found for getStaticPaths - using fallback");
+      return [
+        { params: { slug: "384392155-short-unisex-t-shirt" } },
+        { params: { slug: "384293541-unisex-hoodie" } },
+        { params: { slug: "384293385-women-s-t-shirt" } }
+      ];
+    }  } catch (error) {
     console.error("Error in getStaticPaths:", error);
-    return [];
+    // Return fallback paths instead of empty array
+    return [
+      { params: { slug: "384392155-short-unisex-t-shirt" } },
+      { params: { slug: "384293541-unisex-hoodie" } },
+      { params: { slug: "384293385-women-s-t-shirt" } }
+    ];
   }
 }
 
@@ -474,8 +488,6 @@ const productData = product || {};
         // Recopilar todas las imágenes disponibles
         allAvailableImages = collectAllImages();
         
-        console.log("Imágenes disponibles:", allAvailableImages.length);
-        
         // Establecer imagen principal inicial
         if (allAvailableImages.length > 0) {
           // Usar la imagen del producto principal si está disponible
@@ -658,14 +670,6 @@ const productData = product || {};
           }
         }
         
-        console.log('Adding to cart:', {
-          variantId: variant.id,
-          color: variant.color,
-          selectedColor: selectedColor,
-          thumbnailUrl: thumbnailUrl,
-          currentMainImage: currentMainImage?.url
-        });
-
         const cartItem = {
           productId: productId,
           variantId: variant.id,

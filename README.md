@@ -1,14 +1,68 @@
-# Astro Starter Kit: Minimal
+# Rave Revolution Beats - Electronic Music Experience
 
-```sh
-npm create astro@latest -- --template minimal
+🎵 Una experiencia inmersiva de música electrónica con tienda integrada y funcionalidades PWA.
+
+## 🚀 Características
+
+- **Sitio Web Completo**: Páginas de inicio, música, tienda, about y contacto
+- **Tienda E-commerce**: Integración con Printful para productos personalizados
+- **PWA Ready**: Progressive Web App con manifest optimizado
+- **Carrito de Compras**: Sistema completo de carrito con localStorage
+- **Responsive Design**: Optimizado para todos los dispositivos
+- **Música Streaming**: Enlaces a plataformas de música principales
+
+## 🛠️ Tecnologías
+
+- **Astro** - Framework web moderno
+- **SCSS** - Estilos avanzados
+- **TypeScript** - Tipado estático
+- **Printful API** - Gestión de productos
+- **PWA** - Aplicación web progresiva
+
+## 📦 Instalación
+
+```bash
+# Clonar el repositorio
+git clone [repository-url]
+
+# Instalar dependencias
+npm install
+
+# Configurar variables de entorno
+cp .env.example .env
+# Editar .env con tus credenciales de Printful
+
+# Iniciar servidor de desarrollo
+npm run dev
 ```
 
-[![Open in StackBlitz](https://developer.stackblitz.com/img/open_in_stackblitz.svg)](https://stackblitz.com/github/withastro/astro/tree/latest/examples/minimal)
-[![Open with CodeSandbox](https://assets.codesandbox.io/github/button-edit-lime.svg)](https://codesandbox.io/p/sandbox/github/withastro/astro/tree/latest/examples/minimal)
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/withastro/astro?devcontainer_path=.devcontainer/minimal/devcontainer.json)
+## 🔧 Variables de Entorno
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+```env
+PRINTFUL_API_BASE=https://api.printful.com/
+PRINTFUL_ACCESS_TOKEN=tu-token-aqui
+```
+
+## 📋 Scripts Disponibles
+
+```bash
+npm run dev          # Servidor de desarrollo
+npm run build        # Construir para producción
+npm run preview      # Vista previa de la build
+npm run deploy       # Desplegar a GitHub Pages
+npm run publish      # Build + Deploy
+```
+
+## 🔒 Robustez y Manejo de Errores
+
+Este proyecto incluye múltiples capas de protección:
+
+- **Productos de Respaldo**: Funciona sin conexión a Printful API
+- **Rutas Estáticas**: Páginas de producto siempre disponibles  
+- **Validación de Moneda**: Manejo seguro de códigos de moneda
+- **Iconos PWA**: Múltiples tamaños para mejor compatibilidad
+
+## 📁 Estructura del Proyecto
 
 ## 🚀 Project Structure
 

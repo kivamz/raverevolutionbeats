@@ -79,8 +79,6 @@ function updateCartCount() {
   const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
   const cartCountElement = document.querySelector('.cart-count') || document.getElementById('cart-count');
   
-  console.log(`Updating cart count: ${totalItems} items`);
-  
   if (cartCountElement) {
     cartCountElement.textContent = totalItems.toString();
     
@@ -98,7 +96,6 @@ function updateCartCount() {
       cartCountElement.classList.remove('animate');
     }, 600);
     
-    console.log(`Cart count updated to: ${totalItems}`);
   } else {
     console.warn('Cart count element not found');
   }
@@ -166,24 +163,11 @@ function showCartNotification(message) {
 
 // Initialize cart count on page load
 document.addEventListener('DOMContentLoaded', function() {
-  console.log('Cart manager initialized');
   updateCartCount();
   
   // Listen for cart updates
   window.addEventListener('cartUpdated', function(event) {
-    console.log('Cart updated event received:', event.detail);
     updateCartCount();
-  });
-  
-  // Debug: log available functions
-  console.log('Available cart functions:', {
-    getCart: typeof getCart,
-    saveCart: typeof saveCart,
-    addToCart: typeof addToCart,
-    removeFromCart: typeof removeFromCart,
-    updateCartCount: typeof updateCartCount,
-    showCartNotification: typeof showCartNotification,
-    toggleCart: typeof toggleCart
   });
 });
 
