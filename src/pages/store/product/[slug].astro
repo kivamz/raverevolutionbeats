@@ -19,14 +19,21 @@ const colorMap = {
 
 // getStaticPaths utiliza solo PRINTFUL_ACCESS_TOKEN.
 export async function getStaticPaths() {
-  const slugify = (str) =>
+  const slugify = (str: string) =>
     str
       .trim()
       .toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
-  const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
-  if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) return [];
+      
+  const PRINTFUL_API_BASE = import.meta.env.PRINTFUL_API_BASE;
+  const PRINTFUL_ACCESS_TOKEN = import.meta.env.PRINTFUL_ACCESS_TOKEN;
+  
+  if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN) {
+    console.warn("Missing Printful API credentials for getStaticPaths");
+    return [];
+  }
+  
   try {
     const response = await fetch(`${PRINTFUL_API_BASE}store/products`, {
       headers: {
@@ -34,27 +41,51 @@ export async function getStaticPaths() {
         "Content-Type": "application/json"
       }
     });
+    
+    if (!response.ok) {
+      console.error("Failed to fetch products for getStaticPaths:", response.status);
+      return [];
+    }
+    
     const data = await response.json();
-    return data.result.map((product) => ({
-      params: { slug: `${product.id}-${slugify(product.name)}` }
-    }));
+    
+    if (data.result && data.result.length > 0) {
+      const paths = data.result.map((product: any) => {
+        const slug = `${product.id}-${slugify(product.name)}`;
+        return { params: { slug } };
+      });
+      console.log(`Generated ${paths.length} product paths for static generation`);
+      return paths;
+    } else {
+      console.warn("No products found for getStaticPaths");
+      return [];
+    }
   } catch (error) {
+    console.error("Error in getStaticPaths:", error);
     return [];
   }
 }
 
 const { slug } = Astro.params;
-const productId = slug.split('-')[0];
+
+if (!slug || typeof slug !== 'string') {
+  throw new Error("Parámetro slug no válido");
+}
+
+const productId = (slug as string).split('-')[0];
 
 const { PRINTFUL_API_BASE, PRINTFUL_ACCESS_TOKEN } = import.meta.env;
 if (!PRINTFUL_API_BASE || !PRINTFUL_ACCESS_TOKEN)
   throw new Error(".env incompleto");
 
-const formatEuro = (value, currency = "EUR") =>
-  new Intl.NumberFormat("es-ES", { style: "currency", currency }).format(value);
+const formatEuro = (value: any, currency = "EUR") => {
+  // Ensure currency is never null or undefined
+  const safeCurrency = currency && typeof currency === 'string' ? currency : "EUR";
+  return new Intl.NumberFormat("es-ES", { style: "currency", currency: safeCurrency }).format(value);
+};
 
 // Función para obtener variante enriquecida (GET /products/variant/{id}).
-async function getVariantComplete(id) {
+async function getVariantComplete(id: any) {
   try {
     const res = await fetch(`${PRINTFUL_API_BASE}products/variant/${id}`, {
       headers: {
@@ -68,6 +99,7 @@ async function getVariantComplete(id) {
     }
     return undefined;
   } catch (error) {
+    console.error("Error en getVariantComplete:", error);
     return undefined;
   }
 }
@@ -81,34 +113,49 @@ try {
     }
   });
   const data = await res.json();
-  
   product = data.result?.sync_product || null;
   if (product) {
     const basicVariants = data.result.sync_variants || [];
-    product.sync_variants = basicVariants;
+    product.sync_variants = basicVariants; // Guardamos fallback.
+    
+    // En lugar de reemplazar completamente las variantes, vamos a enriquecerlas
+    // manteniendo las URLs de imagen de las sync_variants originales
     product.variants = await Promise.all(
-      basicVariants.map(async (variant) => {
+      basicVariants.map(async (variant: any) => {
         const idToUse = variant.variant_id ? variant.variant_id : variant.id;
         const fullVariant = await getVariantComplete(idToUse);
-        return fullVariant
-          ? { ...fullVariant, retail_price: variant.retail_price, price: variant.price }
+          // Combinamos la información completa con las URLs originales
+        const combinedVariant = fullVariant
+          ? { 
+              ...fullVariant, 
+              retail_price: variant.retail_price, 
+              price: variant.price,
+              // Preservamos las URLs de imagen de las sync_variants
+              preview_url: variant.preview_url,
+              thumbnail_url: variant.thumbnail_url,
+              // También incluimos los archivos si existen
+              files: variant.files
+            }
           : variant;
+        
+        return combinedVariant;
       })
     );
+    
     if (!product.variants.length && basicVariants.length) {
       product.variants = basicVariants;
     }
   }
 } catch (error) {
-  // Error obteniendo producto
+  console.error("Error obteniendo producto:", error);
 }
 
-let uniqueColorVariants = [];
-let uniqueSizes = [];
+let uniqueColorVariants: any[] = [];
+let uniqueSizes: string[] = [];
 if (product?.variants?.length) {
-  const colorDict = {};
-  const sizeSet = new Set();
-  product.variants.forEach(v => {
+  const colorDict: any = {};
+  const sizeSet = new Set<string>();
+  product.variants.forEach((v: any) => {
     if (v.color) {
       const key = v.color.trim().toLowerCase();
       if (!colorDict[key]) colorDict[key] = v;
@@ -118,6 +165,10 @@ if (product?.variants?.length) {
   uniqueColorVariants = Object.values(colorDict);
   uniqueSizes = Array.from(sizeSet);
 }
+
+// Preparar datos para el script
+const variantsData = (product?.variants && product.variants.length) ? product.variants : (product?.sync_variants || []);
+const productData = product || {};
 ---
 <Layout>
   <section class="product-detail">
@@ -127,8 +178,7 @@ if (product?.variants?.length) {
           <div class="product-header">
             <h1 class="product-title">{product.name}</h1>
             {product.description && <p class="product-description">{product.description}</p>}
-          </div>
-          <div class="product-flex">
+          </div>          <div class="product-flex">
             <div class="image-gallery">
               <div class="main-image-container">
                 {product.thumbnail_url && (
@@ -136,8 +186,8 @@ if (product?.variants?.length) {
                 )}
               </div>
               <div class="thumbnails-container">
-                <div id="image-thumbnails" class="thumbnails-grid">
-                  <!-- Las miniaturas se generarán dinámicamente via JavaScript -->
+                <div id="thumbnail-container" class="thumbnails-grid">
+                  <!-- Las miniaturas se cargarán dinámicamente -->
                 </div>
               </div>
             </div>
@@ -149,11 +199,10 @@ if (product?.variants?.length) {
                     {uniqueColorVariants.map(variant => (
                       <div
                         class="color-swatch"
-                        data-color={variant.color}
-                        style={{
+                        data-color={variant.color}                        style={{
                           backgroundColor: variant.color_code
                             ? variant.color_code
-                            : (colorMap[variant.color.toLowerCase()] || variant.color)
+                            : (colorMap[variant.color?.toLowerCase() as keyof typeof colorMap] || variant.color)
                         }}
                         title={variant.color}>
                       </div>
@@ -172,31 +221,28 @@ if (product?.variants?.length) {
                     ))}
                   </div>
                 </div>
-              )}              <div class="price-display">
-                <span id="selected-price">
-                  {product.variants.length > 0 &&
-                    formatEuro(
-                      Math.min(...product.variants.map(v => parseFloat(v.retail_price || v.price || "0"))),
-                      product.variants[0].currency || "EUR"
+              )}
+              <div class="price-display">
+                <span id="selected-price">                  {product.variants.length > 0 &&                    formatEuro(
+                      Math.min(...product.variants.map((v: any) => parseFloat(v.retail_price || v.price || "0"))),
+                      product.variants[0]?.currency || "EUR"
                     )}
                 </span>
-              </div>
-              
-              <!-- Status indicator -->
-              <div id="selection-status" style="margin-bottom: 1rem; padding: 0.8rem; background: rgba(255, 255, 255, 0.1); border-radius: 8px; text-align: center; color: #fff; font-size: 0.9rem; border: 1px solid rgba(255, 255, 255, 0.2);">
-                Please select color and size
-              </div>
-              
-              <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button>
-              <!-- Mensaje de confirmación -->
-              <div id="cart-message" style="display: none; margin-top: 10px; padding: 10px; background: #4CAF50; color: white; border-radius: 4px; text-align: center;">
-                ✅ Producto añadido al carrito!
+              </div>              <button id="add-to-cart" class="add-to-cart" disabled>Add to Cart</button>
+              <!-- Mensaje de confirmación mejorado -->
+              <div id="cart-message" class="cart-success-message" style="display: none;">
+                <i class="fas fa-check-circle"></i>
+                <span>Added to cart!</span>
               </div>
             </aside>
-          </div>
-          <!-- Inyectamos variantes y producto en un JSON -->
-          <script id="variants-data" type="application/json">{JSON.stringify((product.variants && product.variants.length) ? product.variants : (product.sync_variants || []))}</script>
-          <script id="product-data" type="application/json">{JSON.stringify(product)}</script>
+          </div>          <!-- Datos para el script -->
+          <script define:vars={{ variantsData, productData, productId }}>
+            window.productPageData = {
+              variants: variantsData,
+              product: productData,
+              productId: productId
+            };
+          </script>
         </>
       ) : (
         <p>Producto no encontrado.</p>
@@ -207,395 +253,495 @@ if (product?.variants?.length) {
   <div id="modal" class="modal">
     <span id="modal-close" class="modal-close">&times;</span>
     <img class="modal-content" id="modal-image" alt="Enlarged Image" />
-  </div>
-  
-  <script type="module">
+  </div>    <script type="module">
     document.addEventListener("DOMContentLoaded", () => {
       // Configuración del modal
       const modal = document.getElementById("modal");
       if (modal) modal.style.display = "none";
-      
-      // Recuperar variantes y producto desde JSON
-      const variantsDataEl = document.getElementById("variants-data");
-      const productDataEl = document.getElementById("product-data");
-      
-      let variants = [];
-      let product = {};
-      try {
-        variants = variantsDataEl ? JSON.parse(variantsDataEl.textContent.trim()) : [];
-        product = productDataEl ? JSON.parse(productDataEl.textContent.trim()) : {};
-      } catch (e) {
-        // Error parsing JSON data
-      }
 
-      // Fallback
-      if (!variants.length && product.sync_variants) {
+      // Recuperar datos desde window
+      const pageData = window.productPageData || {};
+      let variants = pageData.variants || [];
+      let product = pageData.product || {};
+      let productId = pageData.productId || "";
+
+      // Fallback: si variants es vacío, usar product.sync_variants si existe
+      if (!variants.length && product.sync_variants && product.sync_variants.length) {
         variants = product.sync_variants;
       }
-      
-      // Calculate unique colors and sizes
-      let uniqueColorVariants = [];
-      let uniqueSizes = [];
-      if (variants?.length) {
-        const colorDict = {};
-        const sizeSet = new Set();
-        variants.forEach(v => {
-          if (v.color) {
-            const key = v.color.trim().toLowerCase();
-            if (!colorDict[key]) colorDict[key] = v;
-          }
-          if (v.size) sizeSet.add(v.size.trim());
-        });
-        uniqueColorVariants = Object.values(colorDict);
-        uniqueSizes = Array.from(sizeSet);
+
+      if (!variants.length) {
+        console.error("No hay variantes disponibles");
+        return;
       }
 
-      let selectedColor = null, selectedSize = null;
-
-      // FUNCIONES AUXILIARES
-      const findVariant = (color, size) => {
-        return variants.find(v => {
-          const variantColor = (v.color || "").trim().toLowerCase();
-          const variantSize = (v.size || "").trim().toLowerCase();
-          const searchColor = (color || "").trim().toLowerCase();
-          const searchSize = (size || "").trim().toLowerCase();
-          
-          return variantColor === searchColor && variantSize === searchSize;
-        });
-      };
-
-      const getVariantImageUrl = (variant) => {
+      let selectedColor = null;
+      let selectedSize = null;      // Función para obtener todas las imágenes de una variante
+      const getVariantImages = (variant) => {
+        const images = [];
+        
         if (variant.files && variant.files.length > 0) {
-          const previewFile = variant.files.find(f => f.type === 'preview');
-          if (previewFile && previewFile.preview_url) {
-            return previewFile.preview_url;
-          }
-          if (variant.files[0] && variant.files[0].preview_url) {
-            return variant.files[0].preview_url;
-          }
-        }
-        if (variant.thumbnail_url) {
-          return variant.thumbnail_url;
-        }
-        return null;
-      };
-
-      // GALERÍA DE IMÁGENES
-      const generateImageGallery = () => {
-        const thumbnailsContainer = document.getElementById("image-thumbnails");
-        if (!thumbnailsContainer) return;
-        
-        const uniqueImages = new Map();
-        
-        // Agregar imagen principal del producto
-        if (product.thumbnail_url) {
-          uniqueImages.set(product.thumbnail_url, {
-            url: product.thumbnail_url,
-            label: 'Principal',
-            color: 'default'
+          // Solo tomar archivos de tipo 'preview' que muestran el producto completo
+          variant.files.forEach(file => {
+            if (file.type === 'preview' && file.preview_url) {
+              images.push({
+                url: file.preview_url,
+                thumbnail: file.thumbnail_url || file.preview_url,
+                type: file.type
+              });
+            }
           });
         }
         
-        // Agregar imágenes de TODAS las variantes
-        variants.forEach(variant => {
-          const imageUrl = getVariantImageUrl(variant);
-          if (imageUrl && !uniqueImages.has(imageUrl)) {
-            uniqueImages.set(imageUrl, {
-              url: imageUrl,
-              label: variant.color || 'Variante',
-              color: variant.color || 'default'
+        // Si no hay archivos de preview, usar URLs directas si existen
+        if (images.length === 0) {
+          if (variant.preview_url) {
+            images.push({
+              url: variant.preview_url,
+              thumbnail: variant.thumbnail_url || variant.preview_url,
+              type: 'default'
+            });
+          } else if (variant.thumbnail_url) {
+            images.push({
+              url: variant.thumbnail_url,
+              thumbnail: variant.thumbnail_url,
+              type: 'default'
             });
           }
+        }
+        
+        return images;
+      };      // Variables globales para el manejo de la galería
+      let allAvailableImages = [];
+      let currentMainImage = null;
+
+      // Función para recopilar todas las imágenes disponibles del producto
+      const collectAllImages = () => {
+        const imageMap = new Map();
+        
+        variants.forEach(variant => {
+          const images = getVariantImages(variant);
+          images.forEach(img => {
+            if (!imageMap.has(img.url)) {
+              imageMap.set(img.url, {
+                ...img,
+                color: variant.color,
+                variantId: variant.id
+              });
+            }
+          });
         });
         
-        // Generar thumbnails solo si hay más de una imagen
-        if (uniqueImages.size > 1) {
-          thumbnailsContainer.innerHTML = '';
-          uniqueImages.forEach((image, url) => {
-            const thumbnail = document.createElement('img');
-            thumbnail.src = url;
-            thumbnail.alt = image.label;
-            thumbnail.className = 'thumbnail';
-            thumbnail.title = image.label;
-            thumbnail.dataset.color = image.color;
-            
-            // Marcar como activa la imagen principal al inicio
-            if (url === product.thumbnail_url) {
-              thumbnail.classList.add('active');
-            }
-            
-            thumbnail.addEventListener('click', () => {
-              updateMainImage(url);
-              updateActiveThumbnail(thumbnail);
-            });
-            
-            thumbnailsContainer.appendChild(thumbnail);
-          });
-        } else {
-          // Si solo hay una imagen, ocultar el contenedor de thumbnails
-          thumbnailsContainer.style.display = 'none';
-        }
-      };
-
-      const updateMainImage = (imageUrl) => {
+        return Array.from(imageMap.values());
+      };      // Función para actualizar la imagen principal
+      const updateMainImage = (imageData) => {
         const mainImg = document.getElementById("main-product-image");
-        if (mainImg && imageUrl && imageUrl !== mainImg.src) {
-          mainImg.style.opacity = "0.5";
-          mainImg.style.filter = "blur(2px)";
+        if (mainImg && imageData) {
+          // Añadir clase de carga
+          mainImg.classList.add("loading");
           
+          // Precargar la imagen
           const newImg = new Image();
           newImg.onload = () => {
-            mainImg.src = imageUrl;
-            mainImg.style.opacity = "1";
-            mainImg.style.filter = "none";
+            mainImg.src = imageData.url;
+            mainImg.classList.remove("loading");
+            mainImg.classList.add("loaded");
+            currentMainImage = imageData;
+            updateThumbnailGallery();
           };
           newImg.onerror = () => {
-            mainImg.style.opacity = "1";
-            mainImg.style.filter = "none";
+            console.error("Error cargando imagen:", imageData.url);
+            mainImg.classList.remove("loading");
           };
-          newImg.src = imageUrl;
+          newImg.src = imageData.url;
+        }
+      };// Función para actualizar la galería de miniaturas (mejorada)
+      const updateThumbnailGallery = (filterByColor = null) => {
+        const thumbnailContainer = document.getElementById("thumbnail-container");
+        if (!thumbnailContainer) return;
+        
+        // Limpiar miniaturas existentes
+        thumbnailContainer.innerHTML = "";
+        
+        let imagesToShow = [];
+        
+        if (filterByColor) {
+          // Filtrar imágenes por color seleccionado
+          const colorImages = allAvailableImages.filter(img => 
+            img.color && img.color.trim().toLowerCase() === filterByColor.trim().toLowerCase()
+          );
+          
+          // Si hay múltiples imágenes del color seleccionado, usarlas
+          if (colorImages.length > 1) {
+            imagesToShow = colorImages;
+          } else if (colorImages.length === 1) {
+            // Si solo hay una imagen de ese color, mostrar también algunas otras para dar contexto
+            const otherImages = allAvailableImages.filter(img => 
+              !img.color || img.color.trim().toLowerCase() !== filterByColor.trim().toLowerCase()
+            ).slice(0, 3); // Máximo 3 imágenes adicionales
+            imagesToShow = [...colorImages, ...otherImages];
+          } else {
+            // Si no hay imágenes del color seleccionado, mostrar todas
+            imagesToShow = allAvailableImages;
+          }
+        } else if (selectedColor) {
+          // Si hay un color seleccionado, mostrar primero las imágenes de ese color
+          const colorImages = allAvailableImages.filter(img => 
+            img.color && img.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()
+          );
+          const otherImages = allAvailableImages.filter(img => 
+            !img.color || img.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()
+          );
+          
+          imagesToShow = [...colorImages, ...otherImages];
+        } else {
+          // Si no hay color seleccionado, mostrar todas las imágenes disponibles
+          imagesToShow = allAvailableImages;
+        }
+        
+        // Excluir la imagen principal actual de las miniaturas
+        if (currentMainImage) {
+          imagesToShow = imagesToShow.filter(img => img.url !== currentMainImage.url);
+        }
+        
+        // Asegurar que hay al menos una miniatura visible si es posible
+        if (imagesToShow.length === 0 && allAvailableImages.length > 1) {
+          // Si no hay miniaturas para mostrar pero hay más imágenes disponibles,
+          // mostrar todas excepto la principal
+          imagesToShow = allAvailableImages.filter(img => 
+            !currentMainImage || img.url !== currentMainImage.url
+          );
+        }
+        
+        // Crear miniaturas
+        imagesToShow.forEach((image, index) => {
+          const thumbnailDiv = document.createElement("div");
+          thumbnailDiv.className = "thumbnail";
+          
+          // Agregar indicador visual si la imagen es de un color diferente al seleccionado
+          if (selectedColor && image.color && 
+              image.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
+            thumbnailDiv.classList.add("different-color");
+          }
+          
+          const thumbnailImg = document.createElement("img");
+          thumbnailImg.src = image.thumbnail;
+          thumbnailImg.alt = image.color ? `Vista en ${image.color}` : `Vista ${index + 1}`;
+          thumbnailImg.title = image.color ? `Ver en ${image.color}` : `Vista ${index + 1}`;
+          
+          thumbnailDiv.appendChild(thumbnailImg);
+          
+          // Event listener para intercambiar con imagen principal
+          thumbnailDiv.addEventListener("click", () => {
+            // Remover clase active de miniaturas anteriores
+            document.querySelectorAll(".thumbnail").forEach(thumb => {
+              thumb.classList.remove("active");
+            });
+            
+            // Agregar clase active a la miniatura seleccionada
+            thumbnailDiv.classList.add("active");
+            
+            // Actualizar la imagen principal
+            updateMainImage(image);
+            
+            // Si se hace clic en una imagen de diferente color, actualizar la selección de color
+            if (image.color && (!selectedColor || 
+                image.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase())) {
+              
+              // Actualizar la selección visual de color
+              document.querySelectorAll(".color-swatch").forEach(swatch => {
+                swatch.classList.remove("selected");
+                if (swatch.dataset.color && 
+                    swatch.dataset.color.trim().toLowerCase() === image.color.trim().toLowerCase()) {
+                  swatch.classList.add("selected");
+                }
+              });
+              
+              selectedColor = image.color;
+              updateUI();
+            }
+          });
+          
+          thumbnailContainer.appendChild(thumbnailDiv);
+        });
+        
+        // Hacer scroll horizontal suave si hay muchas miniaturas
+        if (imagesToShow.length > 4) {
+          thumbnailContainer.style.overflowX = "auto";
+        }
+      };      // Función para inicializar la galería
+      const initializeGallery = () => {
+        // Recopilar todas las imágenes disponibles
+        allAvailableImages = collectAllImages();
+        
+        console.log("Imágenes disponibles:", allAvailableImages.length);
+        
+        // Establecer imagen principal inicial
+        if (allAvailableImages.length > 0) {
+          // Usar la imagen del producto principal si está disponible
+          let initialImage = allAvailableImages.find(img => img.url === product.thumbnail_url);
+          if (!initialImage) {
+            initialImage = allAvailableImages[0];
+          }
+          updateMainImage(initialImage);
+        } else {
+          // Fallback a la imagen del producto
+          currentMainImage = {
+            url: product.thumbnail_url,
+            thumbnail: product.thumbnail_url,
+            color: null,
+            type: 'fallback'
+          };
+          updateThumbnailGallery();
+        }
+      };const formatPrice = (price, currency = "EUR") => {
+        // Ensure currency is never null or undefined
+        const safeCurrency = currency && typeof currency === 'string' ? currency : "EUR";
+        return new Intl.NumberFormat("es-ES", {
+          style: "currency",
+          currency: safeCurrency
+        }).format(parseFloat(price));
+      };
+
+      // Función para actualizar la UI
+      const updateUI = () => {
+        const priceEl = document.getElementById("selected-price");
+        const addBtn = document.getElementById("add-to-cart");
+
+        if (!priceEl || !addBtn) {
+          console.error("No se encontraron elementos UI necesarios");
+          return;
+        }
+
+        // Si tenemos color y talla seleccionados, buscar la variante específica
+        if (selectedColor && selectedSize) {
+          const variant = variants.find(v => {
+            const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+            const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+            const matchColor = variantColor === selectedColor.trim().toLowerCase();
+            const matchSize = variantSize === selectedSize.trim().toLowerCase();
+            
+            return matchColor && matchSize;
+          });
+
+          if (variant) {            // Actualizar precio
+            const price = variant.retail_price || variant.price || "0";
+            const currency = variant.currency || "EUR";
+            priceEl.textContent = formatPrice(price, currency);
+            
+            // Actualizar imagen principal con la del color seleccionado
+            const colorImages = allAvailableImages.filter(img => 
+              img.color && img.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()
+            );
+            if (colorImages.length > 0) {
+              // Solo cambiar la imagen si la actual no es del color seleccionado
+              if (!currentMainImage || 
+                  !currentMainImage.color || 
+                  currentMainImage.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
+                updateMainImage(colorImages[0]);
+              }
+            }
+            
+            // Actualizar galería para mostrar imágenes relevantes
+            updateThumbnailGallery(selectedColor);
+            
+            // Habilitar botón
+            addBtn.disabled = false;
+            addBtn.style.opacity = "1";
+            addBtn.style.cursor = "pointer";          } else {
+            // Mostrar precio mínimo
+            const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+            priceEl.textContent = formatPrice(lowestPrice, variants[0]?.currency || "EUR");
+            
+            // Deshabilitar botón
+            addBtn.disabled = true;
+            addBtn.style.opacity = "0.5";
+            addBtn.style.cursor = "not-allowed";
+          }
+        } else if (selectedColor && !selectedSize) {
+          // Solo color seleccionado
+          const colorVariants = variants.filter(v => {
+            const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+            return variantColor === selectedColor.trim().toLowerCase();
+          });          if (colorVariants.length > 0) {
+            // Actualizar imagen principal con la del color seleccionado
+            const colorImages = allAvailableImages.filter(img => 
+              img.color && img.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()
+            );
+            if (colorImages.length > 0) {
+              // Solo cambiar la imagen si la actual no es del color seleccionado
+              if (!currentMainImage || 
+                  !currentMainImage.color || 
+                  currentMainImage.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
+                updateMainImage(colorImages[0]);
+              }
+            }
+            
+            // Actualizar galería para mostrar imágenes relevantes
+            updateThumbnailGallery(selectedColor);
+              // Mostrar precio mínimo de todas las variantes de este color
+            const lowestColorPrice = Math.min(...colorVariants.map(v => parseFloat(v.retail_price || v.price || "0")));
+            priceEl.textContent = formatPrice(lowestColorPrice, colorVariants[0]?.currency || "EUR");
+          }
+          
+          // Mantener botón deshabilitado hasta que se seleccione talla
+          addBtn.disabled = true;
+          addBtn.style.opacity = "0.5";
+          addBtn.style.cursor = "not-allowed";        } else {
+          // No hay selecciones
+          // Mostrar precio mínimo
+          const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
+          priceEl.textContent = formatPrice(lowestPrice, variants[0]?.currency || "EUR");
+          
+          // Restaurar vista de galería sin filtros
+          updateThumbnailGallery(null);
+          
+          // Deshabilitar botón
+          addBtn.disabled = true;
+          addBtn.style.opacity = "0.5";
+          addBtn.style.cursor = "not-allowed";
         }
       };
 
-      const updateActiveThumbnail = (activeThumbnail) => {
-        document.querySelectorAll('.thumbnail').forEach(thumb => {
-          thumb.classList.remove('active');
-        });
-        activeThumbnail.classList.add('active');
-      };
+      // Función para agregar al carrito
+      const addToCart = () => {
+        if (!selectedColor || !selectedSize) {
+          alert("Por favor selecciona color y talla");
+          return;
+        }
 
-      // ACTUALIZACIÓN DE UI
-      const updateUI = () => {
-        try {
-          const priceEl = document.getElementById("selected-price");
-          const imgEl = document.getElementById("main-product-image");
-          
-          if (!variants.length) return;
-          
-          if (selectedColor && selectedSize) {
-            const variant = findVariant(selectedColor, selectedSize);
-            
-            if (variant) {
-              // Variante válida - actualizar precio e imagen
-              if (priceEl) {
-                const newPrice = new Intl.NumberFormat("es-ES", {
-                  style: "currency",
-                  currency: variant.currency || "EUR"
-                }).format(parseFloat(variant.retail_price || variant.price || "0"));
-                priceEl.textContent = newPrice;
-                priceEl.style.color = "";
-              }
-              
-              // Actualizar imagen
-              if (imgEl) {
-                const newImageUrl = getVariantImageUrl(variant);
-                if (newImageUrl) {
-                  updateMainImage(newImageUrl);
-                  
-                  // Actualizar thumbnail activo
-                  const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
-                  if (matchingThumbnail) {
-                    updateActiveThumbnail(matchingThumbnail);
-                  }
-                }
-              }
-            } else {
-              // Combinación no válida
-              if (priceEl) {
-                const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-                priceEl.textContent = new Intl.NumberFormat("es-ES", {
-                  style: "currency",
-                  currency: variants[0].currency || "EUR"
-                }).format(lowestPrice);
-                priceEl.style.color = "#ff6b6b";
-                setTimeout(() => { priceEl.style.color = ""; }, 2000);
-              }
-            }
-          } else {
-            // Selección incompleta
-            if (priceEl) {
-              const lowestPrice = Math.min(...variants.map(v => parseFloat(v.retail_price || v.price || "0")));
-              priceEl.textContent = new Intl.NumberFormat("es-ES", {
-                style: "currency",
-                currency: variants[0].currency || "EUR"
-              }).format(lowestPrice);
-              priceEl.style.color = "";
-            }
-          }          // BOTÓN Y STATUS - Se actualiza según la selección
-          const addBtn = document.getElementById("add-to-cart");
-          const statusEl = document.getElementById("selection-status");
-          
-          if (addBtn && statusEl) {
-            if (selectedColor && selectedSize) {
-              const variant = findVariant(selectedColor, selectedSize);
-              
-              if (variant) {
-                // Combinación válida - activar botón
-                addBtn.disabled = false;
-                addBtn.style.opacity = "1";
-                addBtn.textContent = "Add to Cart";
-                addBtn.style.background = "";
-                
-                statusEl.innerHTML = `✅ Selected: ${selectedColor} - ${selectedSize}`;
-                statusEl.style.background = "rgba(76, 175, 80, 0.2)";
-                statusEl.style.borderColor = "rgba(76, 175, 80, 0.5)";
-                statusEl.style.color = "#4CAF50";
-              } else {
-                // Combinación no válida - desactivar
-                addBtn.disabled = true;
-                addBtn.style.opacity = "0.6";
-                addBtn.textContent = "Combination Not Available";
-                addBtn.style.background = "#ff6b6b";
-                
-                statusEl.innerHTML = `❌ Combination not available: ${selectedColor} - ${selectedSize}`;
-                statusEl.style.background = "rgba(255, 107, 107, 0.2)";
-                statusEl.style.borderColor = "rgba(255, 107, 107, 0.5)";
-                statusEl.style.color = "#ff6b6b";
-              }
-            } else {
-              // Sin color o talla - desactivar
-              addBtn.disabled = true;
-              addBtn.style.opacity = "0.6";
-              addBtn.textContent = "Select Color and Size";
-              addBtn.style.background = "#666";
-              
-              let statusText = "Please select: ";
-              if (!selectedColor && !selectedSize) {
-                statusText += "color and size";
-              } else if (!selectedColor) {
-                statusText += "color";
-              } else {
-                statusText += "size";
-              }
-              
-              statusEl.innerHTML = statusText;
-              statusEl.style.background = "rgba(255, 255, 255, 0.1)";
-              statusEl.style.borderColor = "rgba(255, 255, 255, 0.2)";
-              statusEl.style.color = "#fff";
+        const variant = variants.find(v => {
+          const variantColor = v.color ? v.color.trim().toLowerCase() : "";
+          const variantSize = v.size ? v.size.trim().toLowerCase() : "";
+          return variantColor === selectedColor.trim().toLowerCase() &&
+                 variantSize === selectedSize.trim().toLowerCase();
+        });        if (!variant) {
+          alert("La combinación seleccionada no está disponible");
+          return;
+        }        // Buscar la mejor imagen disponible para el carrito
+        let thumbnailUrl = variant.preview_url || variant.thumbnail_url || product.thumbnail_url;
+        
+        // Si no hay URL directa, buscar en files con la misma lógica
+        if (!thumbnailUrl && variant.files && variant.files.length > 0) {
+          // Prioridad 1: archivo de tipo 'preview'
+          const previewFile = variant.files.find(f => f.type === 'preview');
+          if (previewFile && previewFile.preview_url) {
+            thumbnailUrl = previewFile.preview_url;
+          }
+          // Prioridad 2: usar thumbnail_url del archivo preview
+          else if (previewFile && previewFile.thumbnail_url) {
+            thumbnailUrl = previewFile.thumbnail_url;
+          }
+          // Prioridad 3: archivo de tipo 'default'
+          else {
+            const defaultFile = variant.files.find(f => f.type === 'default');
+            if (defaultFile && defaultFile.thumbnail_url) {
+              thumbnailUrl = defaultFile.thumbnail_url;
+            } else if (defaultFile && defaultFile.preview_url) {
+              thumbnailUrl = defaultFile.preview_url;
             }
           }
-        } catch (error) {
-          // Error en updateUI
-        }      };
-
-      // FUNCIONALIDAD DEL CARRITO
-      const addToCart = () => {
-        // Verificar que hay color y talla seleccionados
-        if (!selectedColor || !selectedSize) {
-          alert("Por favor selecciona color y talla.");
-          return;
-        }
-
-        const variant = findVariant(selectedColor, selectedSize);
-        if (!variant) {
-          alert("La combinación seleccionada no está disponible.");
-          return;
         }
 
         const cartItem = {
-          productId: product.id,
+          productId: productId,
           variantId: variant.id,
           name: product.name || "",
           color: variant.color,
           size: variant.size,
-          price: parseFloat(variant.retail_price || variant.price || "0"),
+          price: parseFloat(variant.retail_price || variant.price),
           quantity: 1,
-          thumbnail: getVariantImageUrl(variant) || product.thumbnail_url,
+          thumbnail: thumbnailUrl,
           currency: variant.currency || "EUR"
         };
 
-        // Gestión del localStorage
         let cart = [];
         try {
-          const existingCart = localStorage.getItem("cart");
-          cart = existingCart ? JSON.parse(existingCart) : [];
+          cart = JSON.parse(localStorage.getItem("cart") || "[]");
         } catch (e) {
-          cart = [];
+          console.error("Error parseando carrito:", e);
         }
 
-        // Buscar si ya existe este producto con la misma variante
-        const existingIndex = cart.findIndex(item => 
-          item.productId === cartItem.productId && 
-          item.variantId === cartItem.variantId
-        );
-        
+        const existingIndex = cart.findIndex(item => item.variantId === cartItem.variantId);
         if (existingIndex > -1) {
-          // Si existe, incrementar cantidad
           cart[existingIndex].quantity += 1;
         } else {
-          // Si no existe, agregar nuevo
           cart.push(cartItem);
-        }
+        }        localStorage.setItem("cart", JSON.stringify(cart));
 
-        // Guardar en localStorage
-        localStorage.setItem("cart", JSON.stringify(cart));
+        // Dispatch custom event for cart updates
+        window.dispatchEvent(new CustomEvent("cartUpdated"));
 
         // Mostrar mensaje de confirmación
         const cartMessageEl = document.getElementById("cart-message");
         if (cartMessageEl) {
           cartMessageEl.style.display = "block";
-          cartMessageEl.style.animation = "fadeInOut 3s ease-in-out";
           setTimeout(() => {
             cartMessageEl.style.display = "none";
           }, 3000);
         }
-
-        // Disparar evento para actualizar contador del carrito si existe
-        window.dispatchEvent(new CustomEvent('cartUpdated', { 
-          detail: { 
-            cartLength: cart.length,
-            totalItems: cart.reduce((sum, item) => sum + item.quantity, 0)
-          }
-        }));
-      };
-
-      // EVENT LISTENERS
+      };      // Event listeners para colores
       document.querySelectorAll(".color-swatch").forEach(swatch => {
-        swatch.addEventListener("click", () => {
+        swatch.addEventListener("click", (e) => {
+          // Remover selección anterior
           document.querySelectorAll(".color-swatch").forEach(el => el.classList.remove("selected"));
+          
+          // Agregar selección actual
           swatch.classList.add("selected");
           selectedColor = swatch.dataset.color;
           
-          // Actualizar imagen principal según el color seleccionado
-          const colorVariant = variants.find(v => v.color && v.color.trim().toLowerCase() === selectedColor.trim().toLowerCase());
-          if (colorVariant) {
-            const newImageUrl = getVariantImageUrl(colorVariant);
-            if (newImageUrl) {
-              updateMainImage(newImageUrl);
-              // Actualizar thumbnail activo
-              const matchingThumbnail = document.querySelector(`img.thumbnail[src="${newImageUrl}"]`);
-              if (matchingThumbnail) {
-                updateActiveThumbnail(matchingThumbnail);
-              }
-            }          }
+          // Encontrar y mostrar una imagen del color seleccionado
+          const colorImages = allAvailableImages.filter(img => 
+            img.color && img.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()
+          );
+          
+          if (colorImages.length > 0) {
+            // Solo cambiar la imagen si la actual no es del color seleccionado
+            if (!currentMainImage || 
+                !currentMainImage.color || 
+                currentMainImage.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
+              updateMainImage(colorImages[0]);
+            }
+          }
           
           updateUI();
         });
       });
 
-      document.querySelectorAll(".size-option").forEach(opt => {
-        opt.addEventListener("click", () => {
+      // Event listeners para tallas
+      document.querySelectorAll(".size-option").forEach(option => {
+        option.addEventListener("click", (e) => {
+          // Remover selección anterior
           document.querySelectorAll(".size-option").forEach(el => el.classList.remove("selected"));
-          opt.classList.add("selected");          selectedSize = opt.dataset.size;
+          
+          // Agregar selección actual
+          option.classList.add("selected");
+          selectedSize = option.dataset.size;
+          
           updateUI();
         });
       });
 
-      document.getElementById("add-to-cart").addEventListener("click", addToCart);
-
-      // MODAL DE IMAGEN
+      // Event listener para el botón de agregar al carrito
+      const addToCartBtn = document.getElementById("add-to-cart");
+      if (addToCartBtn) {
+        addToCartBtn.addEventListener("click", (e) => {
+          e.preventDefault();
+          addToCart();
+        });
+      }      // Configuración del modal para zoom de imagen
       const modalImg = document.getElementById("modal-image");
       const modalCloseElem = document.getElementById("modal-close");
       const mainImg = document.getElementById("main-product-image");
       
-      if (mainImg) {
+      if (mainImg && modal && modalImg) {
         mainImg.addEventListener("click", () => {
           modal.style.display = "flex";
-          modalImg.src = mainImg.src;
+          modalImg.src = currentMainImage ? currentMainImage.url : mainImg.src;
         });
       }
 
-      if (modalCloseElem) {
+      if (modalCloseElem && modal) {
         modalCloseElem.addEventListener("click", () => {
           modal.style.display = "none";
         });
@@ -607,9 +753,9 @@ if (product?.variants?.length) {
             modal.style.display = "none";
           }
         });
-      }      // INICIALIZACIÓN
-      generateImageGallery();
-      updateUI(); // Inicializar estado del botón
+      }      // Inicializar galería y UI
+      initializeGallery();
+      updateUI();
     });
   </script>
 </Layout>

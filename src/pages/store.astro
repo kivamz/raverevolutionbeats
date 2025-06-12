@@ -100,7 +100,7 @@ const slugify = (str: string): string =>
         {detailedProducts.map((product: ProductDetail) => (        <div class="product-card">
             <a 
               class="product-link" 
-              href={`product/${product.id}-${slugify(product.name)}`} 
+              href={`store/product/${product.id}-${slugify(product.name)}`} 
               data-key={product.id}
             >
               <div class="product">
