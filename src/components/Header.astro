@@ -1,6 +1,7 @@
 ---
 import '../styles/global.scss';
 import '../styles/header.scss';
+import logoImg from '../assets/logo.png';
 
 const baseUrl = import.meta.env.BASE_URL || '/';
 ---
@@ -10,8 +11,7 @@ const baseUrl = import.meta.env.BASE_URL || '/';
     <div class="bg-gradient"></div>
   </div>
     <div class="container">    <a href={baseUrl} class="logo">
-      <img src={`${baseUrl}logo.png`} alt="Rave Revolution Beats" />
-      <span class="logo-text">Rave Revolution Beats</span>
+      <img src={logoImg.src} alt="Rave Revolution Beats" />
     </a>
       <button class="menu-toggle" aria-label="Toggle Navigation">
       <div class="hamburger">

@@ -5,10 +5,5 @@ export default defineConfig({
   base: '/raverevolutionbeats/',
   build: {
     assets: 'assets'
-  },
-  vite: {
-    define: {
-      'import.meta.env.SITE': JSON.stringify('https://kivamz.github.io/raverevolutionbeats')
-    }
   }
 });

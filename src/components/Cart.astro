@@ -1,0 +1,207 @@
+---
+import '../styles/cart.scss';
+---
+
+<div id="mini-cart" class="mini-cart">
+  <div class="mini-cart-header">
+    <h3>Shopping Cart</h3>
+    <button id="close-cart" class="close-cart" aria-label="Close cart">
+      <i class="fas fa-times"></i>
+    </button>
+  </div>
+  
+  <div class="cart-content">
+    <div id="cart-items" class="cart-items">
+      <!-- Cart items will be loaded dynamically -->
+    </div>
+    
+    <div class="cart-empty" id="cart-empty" style="display: none;">
+      <p>Your cart is empty</p>
+      <a href="store" class="btn">Continue Shopping</a>
+    </div>
+  </div>
+  
+  <div class="cart-footer" id="cart-footer" style="display: none;">
+    <div class="cart-subtotal">
+      <span>Subtotal: <strong id="cart-subtotal">€0.00</strong></span>
+    </div>
+    <div class="cart-actions">
+      <a href="cart" class="btn btn-secondary">View Cart</a>
+      <button class="btn btn-primary" id="checkout-btn">Checkout</button>
+    </div>
+  </div>
+</div>
+
+<div id="cart-overlay" class="cart-overlay"></div>
+
+<script type="module">
+  document.addEventListener("DOMContentLoaded", () => {
+    const miniCart = document.getElementById("mini-cart");
+    const cartOverlay = document.getElementById("cart-overlay");
+    const closeCartBtn = document.getElementById("close-cart");
+    const cartIcon = document.getElementById("cart-icon");
+    const cartBadge = document.getElementById("cart-badge");
+    const cartItems = document.getElementById("cart-items");
+    const cartEmpty = document.getElementById("cart-empty");
+    const cartFooter = document.getElementById("cart-footer");
+    const cartSubtotal = document.getElementById("cart-subtotal");
+
+    // Format price function
+    const formatPrice = (price, currency = "EUR") => {
+      const safeCurrency = currency && typeof currency === 'string' ? currency : "EUR";
+      return new Intl.NumberFormat("es-ES", {
+        style: "currency",
+        currency: safeCurrency
+      }).format(parseFloat(price));
+    };
+
+    // Load cart from localStorage
+    const loadCart = () => {
+      try {
+        return JSON.parse(localStorage.getItem("cart") || "[]");
+      } catch (e) {
+        console.error("Error loading cart:", e);
+        return [];
+      }
+    };
+
+    // Save cart to localStorage
+    const saveCart = (cart) => {
+      localStorage.setItem("cart", JSON.stringify(cart));
+      updateCartBadge();
+      updateCartDisplay();
+    };
+
+    // Update cart badge
+    const updateCartBadge = () => {
+      const cart = loadCart();
+      const itemCount = cart.reduce((total, item) => total + item.quantity, 0);
+      
+      if (cartBadge) {
+        cartBadge.textContent = itemCount;
+        cartBadge.style.display = itemCount > 0 ? "block" : "none";
+      }
+    };
+
+    // Update cart display
+    const updateCartDisplay = () => {
+      const cart = loadCart();
+      
+      if (cart.length === 0) {
+        cartItems.innerHTML = "";
+        cartEmpty.style.display = "block";
+        cartFooter.style.display = "none";
+        return;
+      }
+
+      cartEmpty.style.display = "none";
+      cartFooter.style.display = "block";
+
+      // Render cart items
+      cartItems.innerHTML = cart.map((item, index) => `
+        <div class="cart-item" data-index="${index}">
+          <div class="item-image">
+            <img src="${item.thumbnail || 'https://placehold.co/60x60/121212/ffffff?text=No+Image'}" alt="${item.name}" />
+          </div>
+          <div class="item-details">
+            <h4>${item.name}</h4>
+            <p class="item-variant">${item.color} - ${item.size}</p>
+            <div class="item-controls">
+              <div class="quantity-controls">
+                <button class="qty-btn minus" data-index="${index}">-</button>
+                <span class="quantity">${item.quantity}</span>
+                <button class="qty-btn plus" data-index="${index}">+</button>
+              </div>
+              <span class="item-price">${formatPrice(item.price * item.quantity, item.currency)}</span>
+            </div>
+          </div>
+          <button class="remove-item" data-index="${index}" aria-label="Remove item">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      `).join("");
+
+      // Calculate subtotal
+      const subtotal = cart.reduce((total, item) => total + (item.price * item.quantity), 0);
+      cartSubtotal.textContent = formatPrice(subtotal);
+
+      // Add event listeners for cart controls
+      addCartControlListeners();
+    };
+
+    // Add event listeners for cart controls
+    const addCartControlListeners = () => {
+      // Quantity controls
+      document.querySelectorAll(".qty-btn").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const cart = loadCart();
+          const isPlus = e.target.classList.contains("plus");
+
+          if (isPlus) {
+            cart[index].quantity += 1;
+          } else {
+            cart[index].quantity = Math.max(1, cart[index].quantity - 1);
+          }
+
+          saveCart(cart);
+        });
+      });
+
+      // Remove item
+      document.querySelectorAll(".remove-item").forEach(btn => {
+        btn.addEventListener("click", (e) => {
+          const index = parseInt(e.target.dataset.index);
+          const cart = loadCart();
+          cart.splice(index, 1);
+          saveCart(cart);
+        });
+      });
+    };
+
+    // Open cart
+    const openCart = () => {
+      miniCart.classList.add("open");
+      cartOverlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      updateCartDisplay();
+    };
+
+    // Close cart
+    const closeCart = () => {
+      miniCart.classList.remove("open");
+      cartOverlay.classList.remove("open");
+      document.body.style.overflow = "";
+    };
+
+    // Event listeners
+    if (cartIcon) {
+      cartIcon.addEventListener("click", openCart);
+    }
+
+    if (closeCartBtn) {
+      closeCartBtn.addEventListener("click", closeCart);
+    }
+
+    if (cartOverlay) {
+      cartOverlay.addEventListener("click", closeCart);
+    }
+
+    // Initialize cart
+    updateCartBadge();
+    
+    // Listen for storage changes (when items are added from other pages)
+    window.addEventListener("storage", (e) => {
+      if (e.key === "cart") {
+        updateCartBadge();
+        updateCartDisplay();
+      }
+    });
+
+    // Custom event listener for cart updates
+    window.addEventListener("cartUpdated", () => {
+      updateCartBadge();
+      updateCartDisplay();
+    });
+  });
+</script>
