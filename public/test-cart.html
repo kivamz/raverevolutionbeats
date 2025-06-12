@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Cart</title>
+</head>
+<body>
+    <h1>Cart Test Helper</h1>
+    <p>Click the button below to add test items to the cart:</p>
+    
+    <button onclick="addTestItems()">Add Test Items to Cart</button>
+    <button onclick="clearCart()">Clear Cart</button>
+    <a href="/raverevolutionbeats/cart/" target="_blank">View Cart</a>
+    
+    <script>
+        function addTestItems() {
+            const testItems = [
+                {
+                    productId: "384392155",
+                    variantId: "12345-black-s",
+                    name: "Short Unisex T-Shirt",
+                    color: "Black",
+                    size: "S",
+                    price: 25.99,
+                    quantity: 1,
+                    thumbnail: "https://files.cdn.printful.com/products/71/product_1581412969.jpg",
+                    currency: "EUR"
+                },
+                {
+                    productId: "384293541",
+                    variantId: "67890-navy-m",
+                    name: "Unisex Hoodie",
+                    color: "Navy",
+                    size: "M",
+                    price: 45.99,
+                    quantity: 2,
+                    thumbnail: "https://files.cdn.printful.com/products/146/product_1580220615.jpg",
+                    currency: "EUR"
+                },
+                {
+                    productId: "384293385",
+                    variantId: "11111-white-l",
+                    name: "Women's T-Shirt",
+                    color: "White",
+                    size: "L",
+                    price: 22.99,
+                    quantity: 1,
+                    thumbnail: "https://files.cdn.printful.com/products/113/product_1583225376.jpg",
+                    currency: "EUR"
+                }
+            ];
+            
+            localStorage.setItem('cart', JSON.stringify(testItems));
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+            alert('Test items added to cart!');
+        }
+        
+        function clearCart() {
+            localStorage.removeItem('cart');
+            window.dispatchEvent(new CustomEvent('cartUpdated'));
+            alert('Cart cleared!');
+        }
+    </script>
+</body>
+</html>

@@ -621,6 +621,21 @@ const productData = product || {};
         }        // Buscar la mejor imagen disponible para el carrito
         let thumbnailUrl = variant.preview_url || variant.thumbnail_url || product.thumbnail_url;
         
+        // Buscar imagen específica del color seleccionado en la galería actual
+        if (selectedColor && currentMainImage && currentMainImage.color &&
+            currentMainImage.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()) {
+          // Si la imagen principal actual es del color seleccionado, usarla
+          thumbnailUrl = currentMainImage.url;
+        } else if (selectedColor) {
+          // Buscar imagen del color seleccionado en allAvailableImages
+          const colorImage = allAvailableImages.find(img => 
+            img.color && img.color.trim().toLowerCase() === selectedColor.trim().toLowerCase()
+          );
+          if (colorImage) {
+            thumbnailUrl = colorImage.url;
+          }
+        }
+        
         // Si no hay URL directa, buscar en files con la misma lógica
         if (!thumbnailUrl && variant.files && variant.files.length > 0) {
           // Prioridad 1: archivo de tipo 'preview'
@@ -642,6 +657,14 @@ const productData = product || {};
             }
           }
         }
+        
+        console.log('Adding to cart:', {
+          variantId: variant.id,
+          color: variant.color,
+          selectedColor: selectedColor,
+          thumbnailUrl: thumbnailUrl,
+          currentMainImage: currentMainImage?.url
+        });
 
         const cartItem = {
           productId: productId,

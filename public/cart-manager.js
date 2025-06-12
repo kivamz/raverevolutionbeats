@@ -52,8 +52,7 @@ function addToCart(productId, productName, productImage, price, variant, variant
       quantity: 1
     });
   }
-  
-  saveCart(cart);
+    saveCart(cart);
   updateCartCount();
   
   // Show notification
