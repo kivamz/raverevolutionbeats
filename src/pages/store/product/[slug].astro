@@ -1,6 +1,5 @@
 ---
-import Layout from '../../../components/Layout.astro';
-import '../../../styles/product-detail.scss';
+import ProductLayout from '../../../components/ProductLayout.astro';
 
 // Objeto fallback para el color.
 const colorMap = {
@@ -225,7 +224,7 @@ if (product?.variants?.length) {
 const variantsData = (product?.variants && product.variants.length) ? product.variants : (product?.sync_variants || []);
 const productData = product || {};
 ---
-<Layout>
+<ProductLayout>
   <section class="product-detail">
     <div class="container">
       {product ? (
@@ -844,4 +843,4 @@ const productData = product || {};
       updateUI();
     });
   </script>
-</Layout>
+</ProductLayout>
