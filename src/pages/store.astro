@@ -2,6 +2,7 @@
 import Layout from '../components/Layout.astro';
 import "../styles/store.scss";
 import { getBaseUrl } from '../utils/base-url';
+import { getSafeImageSrc, createImageErrorHandler } from '../utils/image-utils';
 
 // Get the correct base URL for the environment
 const baseUrl = getBaseUrl();
@@ -131,10 +132,14 @@ const slugify = (str: string): string =>
               class="product-link" 
               href={`${baseUrl}store/product/${product.id}-${slugify(product.name)}`} 
               data-key={product.id}
-            >
-              <div class="product">
-                {product.thumbnail_url && (
-                  <img src={product.thumbnail_url} alt={product.name} />
+            >              <div class="product">                {product.thumbnail_url && (
+                  <img 
+                    src={getSafeImageSrc(product.thumbnail_url, product.name, 300, 300)} 
+                    alt={product.name}
+                    onerror={createImageErrorHandler(product.name, 300, 300)}
+                    loading="lazy"
+                    data-fallback-level=""
+                  />
                 )}
                 <div class="product-content">
                   <h2>{product.name}</h2>

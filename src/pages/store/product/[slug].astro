@@ -1,5 +1,6 @@
 ---
 import ProductLayout from '../../../components/ProductLayout.astro';
+import { getSafeImageSrc, createImageErrorHandler } from '../../../utils/image-utils';
 
 // Objeto fallback para el color.
 const colorMap = {
@@ -232,11 +233,16 @@ const productData = product || {};
           <div class="product-header">
             <h1 class="product-title">{product.name}</h1>
             {product.description && <p class="product-description">{product.description}</p>}
-          </div>          <div class="product-flex">
-            <div class="image-gallery">
-              <div class="main-image-container">
-                {product.thumbnail_url && (
-                  <img id="main-product-image" src={product.thumbnail_url} alt={product.name} />
+          </div>          <div class="product-flex">            <div class="image-gallery">
+              <div class="main-image-container">                {product.thumbnail_url && (
+                  <img 
+                    id="main-product-image" 
+                    src={getSafeImageSrc(product.thumbnail_url, product.name, 500, 500)} 
+                    alt={product.name}
+                    onerror={createImageErrorHandler(product.name, 500, 500)}
+                    loading="eager"
+                    data-fallback-level=""
+                  />
                 )}
               </div>
               <div class="thumbnails-container">
@@ -387,29 +393,50 @@ const productData = product || {};
         });
         
         return Array.from(imageMap.values());
-      };      // Función para actualizar la imagen principal
+      };      // Función para actualizar la imagen principal con mejor manejo de errores
       const updateMainImage = (imageData) => {
         const mainImg = document.getElementById("main-product-image");
         if (mainImg && imageData) {
           // Añadir clase de carga
-          mainImg.classList.add("loading");
+          mainImg.classList.add('loading');
+          mainImg.classList.remove('loaded');
           
-          // Precargar la imagen
+          // Usar las funciones de utilidad para obtener una URL segura
+          const safeImageUrl = imageData.url || `https://via.placeholder.com/500x500/1a1a1a/ffffff?text=${encodeURIComponent(product.name || 'Product')}`;
+          
+          // Crear nueva imagen para precargar
           const newImg = new Image();
-          newImg.onload = () => {
-            mainImg.src = imageData.url;
-            mainImg.classList.remove("loading");
-            mainImg.classList.add("loaded");
+          newImg.onload = function() {
+            mainImg.src = this.src;
+            mainImg.classList.remove('loading');
+            mainImg.classList.add('loaded');
             currentMainImage = imageData;
             updateThumbnailGallery();
           };
-          newImg.onerror = () => {
-            console.error("Error cargando imagen:", imageData.url);
-            mainImg.classList.remove("loading");
+          newImg.onerror = function() {
+            // Fallback mejorado con múltiples niveles
+            let fallbackLevel = mainImg.dataset.fallbackLevel || '';
+            const productName = encodeURIComponent(product.name || 'Product');
+            
+            if (fallbackLevel !== 'final') {
+              mainImg.dataset.fallbackLevel = fallbackLevel === 'first' ? 'final' : 'first';
+              const fallbackUrl = fallbackLevel === 'first' 
+                ? `https://via.placeholder.com/500x500/333333/ffffff?text=${productName}`
+                : `https://via.placeholder.com/500x500/1a1a1a/ffffff?text=Image+Not+Found`;
+              
+              mainImg.src = fallbackUrl;
+              mainImg.classList.remove('loading');
+              console.warn('Error loading image, trying fallback:', imageData.url);
+            } else {
+              mainImg.classList.remove('loading');
+              console.error('All image fallbacks failed for:', imageData.url);
+            }
           };
-          newImg.src = imageData.url;
+          newImg.src = safeImageUrl;
         }
-      };// Función para actualizar la galería de miniaturas (mejorada)
+      };
+
+      // Función para actualizar la galería de miniaturas (mejorada)
       const updateThumbnailGallery = (filterByColor = null) => {
         const thumbnailContainer = document.getElementById("thumbnail-container");
         if (!thumbnailContainer) return;
@@ -477,11 +504,26 @@ const productData = product || {};
               image.color.trim().toLowerCase() !== selectedColor.trim().toLowerCase()) {
             thumbnailDiv.classList.add("different-color");
           }
+            const thumbnailImg = document.createElement("img");
           
-          const thumbnailImg = document.createElement("img");
-          thumbnailImg.src = image.thumbnail;
+          // Usar URL segura para la miniatura
+          const safeImageUrl = image.thumbnail || image.url || `https://via.placeholder.com/150x150/1a1a1a/ffffff?text=${encodeURIComponent(image.color || 'Variant')}`;
+          thumbnailImg.src = safeImageUrl;
           thumbnailImg.alt = image.color ? `Vista en ${image.color}` : `Vista ${index + 1}`;
           thumbnailImg.title = image.color ? `Ver en ${image.color}` : `Vista ${index + 1}`;
+          
+          // Añadir manejo de errores mejorado para miniaturas
+          thumbnailImg.onerror = function() {
+            let fallbackLevel = this.dataset.fallbackLevel || '';
+            if (fallbackLevel !== 'final') {
+              this.dataset.fallbackLevel = fallbackLevel === 'first' ? 'final' : 'first';
+              const productName = encodeURIComponent(image.color || 'Variant');
+              const fallbackUrl = fallbackLevel === 'first' 
+                ? `https://via.placeholder.com/150x150/333333/ffffff?text=${productName}`
+                : `https://via.placeholder.com/150x150/1a1a1a/ffffff?text=No+Image`;
+              this.src = fallbackUrl;
+            }
+          };
           
           thumbnailDiv.appendChild(thumbnailImg);
           
