@@ -1,8 +1,9 @@
 ---
 import '../styles/footer.scss';
+import { getBaseUrl } from '../utils/base-url';
 
-// Force the correct base URL for production
-const baseUrl = '/raverevolutionbeats/';
+// Get the correct base URL for the environment
+const baseUrl = getBaseUrl();
 ---
 <footer class="footer">
   <div class="footer-background">

@@ -1,9 +1,10 @@
 ---
 import '../styles/global.scss';
 import '../styles/hero.scss';
+import { getBaseUrl } from '../utils/base-url';
 
-// Force the correct base URL for production
-const baseUrl = '/raverevolutionbeats/';
+// Get the correct base URL for the environment
+const baseUrl = getBaseUrl();
 ---
 <section class="hero" itemscope itemtype="https://schema.org/MusicGroup">
   <div class="hero-background" aria-hidden="true">

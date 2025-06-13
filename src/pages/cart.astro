@@ -1,9 +1,10 @@
 ---
 import Layout from '../components/Layout.astro';
 import '../styles/cart.scss';
+import { getBaseUrl } from '../utils/base-url';
 
-// Force the correct base URL for production
-const baseUrl = '/raverevolutionbeats/';
+// Get the correct base URL for the environment
+const baseUrl = getBaseUrl();
 ---
 
 <Layout>

@@ -1,11 +1,10 @@
 {
   "name": "raverevolutionbeats",
   "type": "module",
-  "version": "0.0.1",
-  "scripts": {
+  "version": "0.0.1",  "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "deploy": "gh-pages -d dist",
+    "deploy": "gh-pages -d dist --dotfiles",
     "preview": "astro preview",
     "astro": "astro",
     "publish": "npm run build && npm run deploy"

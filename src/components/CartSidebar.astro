@@ -1,7 +1,9 @@
 ---
 // Cart Sidebar Component
-// Force the correct base URL for production
-const baseUrl = '/raverevolutionbeats/';
+import { getBaseUrl } from '../utils/base-url';
+
+// Get the correct base URL for the environment
+const baseUrl = getBaseUrl();
 ---
 
 <div id="cart-sidebar" class="cart-sidebar">

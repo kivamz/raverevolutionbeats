@@ -5,6 +5,7 @@ import CartSidebar from './CartSidebar.astro';
 import '../styles/global.scss';
 import '../styles/product-detail.scss';
 import faviconSvg from '../assets/favicon.svg';
+import { getAssetUrl } from '../utils/base-url';
 
 // SEO props with defaults
 const {
@@ -15,6 +16,10 @@ const {
   ogImage = "https://yourdomain.com/og-image.jpg",
   twitterCard = "summary_large_image"
 } = Astro.props;
+
+// Get asset URLs with correct base path
+const manifestUrl = getAssetUrl('manifest.json');
+const cartManagerUrl = getAssetUrl('cart-manager.js');
 ---
 <!DOCTYPE html>
 <html lang="en">
@@ -43,9 +48,8 @@ const {
     <meta property="twitter:image" content={ogImage} />
       <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href={faviconSvg.src} />
-    
-    <!-- PWA Manifest -->
-    <link rel="manifest" href="/raverevolutionbeats/manifest.json" />
+      <!-- PWA Manifest -->
+    <link rel="manifest" href={manifestUrl} />
     
     <!-- Additional SEO -->
     <meta name="robots" content="index, follow" />
@@ -61,7 +65,7 @@ const {
     <link rel="dns-prefetch" href="https://youtube.com" />
       <!-- CDN de Font Awesome -->
     <script src="https://kit.fontawesome.com/5e60daf075.js" crossorigin="anonymous"></script>    <!-- Cart Manager Script -->
-    <script src="/raverevolutionbeats/cart-manager.js" is:inline></script>
+    <script src={cartManagerUrl} defer></script>
   </head>
   <body>
     <Header />
